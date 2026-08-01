@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Second Summit — prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300..800&family=Public+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --slate:#28343B;        /* Welsh slate */
+  --ink:#171F24;
+  --paper:#F7F6F1;        /* map sheet */
+  --line:#DAD7CC;
+  --landranger:#C2166B;   /* OS Landranger magenta */
+  --gorse:#D89B21;        /* gorse yellow — weather */
+  --live:#1E8F54;
+  --muted:#5C6A72;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Public Sans',system-ui,sans-serif;
+  background:var(--paper);color:var(--ink);
+  font-size:16px;line-height:1.55;
+  padding-bottom:calc(64px + env(safe-area-inset-bottom));
+}
+h1,h2,h3,.display{font-family:'Bricolage Grotesque',sans-serif}
+.mono{font-family:'IBM Plex Mono',monospace}
+
+/* ---------- top band ---------- */
+header{
+  background:var(--slate);color:var(--paper);
+  padding:14px 20px 12px;
+  position:sticky;top:0;z-index:20;
+  display:flex;align-items:baseline;justify-content:space-between;
+}
+header .wordmark{font-family:'Bricolage Grotesque';font-weight:700;font-size:1.05rem;letter-spacing:.01em}
+header .wordmark span{color:var(--landranger)}
+header .gridref{font-family:'IBM Plex Mono';font-size:.68rem;color:#9FB0B8;letter-spacing:.04em}
+
+/* ---------- pages ---------- */
+.page{display:none;max-width:680px;margin:0 auto}
+.page.active{display:block}
+section{padding:24px 20px;border-bottom:1px solid var(--line)}
+.eyebrow{font-family:'IBM Plex Mono';font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--landranger);margin-bottom:8px}
+h1{font-size:2rem;font-weight:750;line-height:1.08;letter-spacing:-.01em}
+h2{font-size:1.35rem;font-weight:700;line-height:1.15;margin-bottom:12px}
+h3{font-size:1rem;font-weight:650;margin-bottom:6px}
+p{margin-bottom:12px}
+p:last-child{margin-bottom:0}
+.small{font-size:.85rem;color:var(--muted)}
+
+/* ---------- ridgeline signature ---------- */
+.ridge-wrap{padding:20px 20px 8px}
+.ridge-svg{width:100%;height:auto;display:block}
+.ridge-labels{display:flex;justify-content:space-between;font-family:'IBM Plex Mono';font-size:.6rem;color:var(--muted);letter-spacing:.03em;padding:4px 2px 0}
+.ridge-labels b{color:var(--ink);font-weight:500}
+
+/* ---------- live elements ---------- */
+.live-pill{display:inline-flex;align-items:center;gap:7px;background:var(--ink);color:var(--paper);
+  border-radius:999px;padding:6px 14px 6px 10px;font-family:'IBM Plex Mono';font-size:.72rem;letter-spacing:.08em}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--live);animation:pulse 1.6s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+@media (prefers-reduced-motion:reduce){.dot{animation:none}}
+
+.map-frame{border:1px solid var(--line);border-radius:6px;overflow:hidden;background:#E9EDEA}
+.map-frame iframe{width:100%;height:340px;border:0;display:block}
+.map-note{font-size:.78rem;color:var(--muted);padding:8px 2px 0}
+
+/* ---------- conditions card ---------- */
+.cond{border:1px solid var(--line);border-left:4px solid var(--gorse);border-radius:6px;background:#fff;padding:16px}
+.cond .row{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px dashed var(--line);font-size:.9rem}
+.cond .row:last-of-type{border-bottom:0}
+.cond .row .k{color:var(--muted)}
+.cond .row .v{font-weight:600;text-align:right}
+.badge{display:inline-block;font-family:'IBM Plex Mono';font-size:.62rem;letter-spacing:.1em;color:#fff;background:var(--gorse);border-radius:3px;padding:2px 7px;margin-left:8px;vertical-align:middle}
+
+/* ---------- vlog strip ---------- */
+.vlog-strip{display:flex;gap:12px;overflow-x:auto;padding:4px 2px 10px;-webkit-overflow-scrolling:touch}
+.vlog{flex:0 0 220px;border:1px solid var(--line);border-radius:6px;background:#fff;overflow:hidden}
+.vlog .thumb{height:124px;background:var(--slate);display:flex;align-items:center;justify-content:center;color:#8FA2AB;position:relative}
+.vlog .thumb::after{content:"";position:absolute;width:0;height:0;border-left:18px solid var(--paper);border-top:11px solid transparent;border-bottom:11px solid transparent;opacity:.9}
+.vlog .meta{padding:10px 12px}
+.vlog .meta .d{font-family:'IBM Plex Mono';font-size:.62rem;color:var(--landranger);letter-spacing:.1em}
+.vlog .meta .t{font-size:.85rem;font-weight:600;line-height:1.25;margin-top:3px}
+
+/* ---------- stat blocks / tables ---------- */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.stat{background:#fff;padding:14px 10px;text-align:center}
+.stat .n{font-family:'Bricolage Grotesque';font-weight:750;font-size:1.4rem;line-height:1}
+.stat .l{font-family:'IBM Plex Mono';font-size:.6rem;letter-spacing:.08em;color:var(--muted);text-transform:uppercase;margin-top:5px}
+.daylist{list-style:none}
+.daylist li{display:flex;gap:12px;padding:10px 0;border-bottom:1px dashed var(--line);font-size:.9rem;align-items:baseline}
+.daylist li:last-child{border-bottom:0}
+.daylist .dn{font-family:'IBM Plex Mono';font-size:.7rem;color:var(--landranger);flex:0 0 44px}
+.daylist .stage{flex:1}
+.daylist .mi{font-family:'IBM Plex Mono';font-size:.72rem;color:var(--muted);flex:0 0 auto}
+
+.rulecard{border:1px solid var(--line);border-radius:6px;background:#fff;padding:14px 16px;margin-bottom:10px}
+.rulecard .tag{font-family:'IBM Plex Mono';font-size:.62rem;letter-spacing:.12em}
+.do .tag{color:var(--live)} .dont .tag{color:var(--landranger)}
+.rulecard p{margin:4px 0 0;font-size:.9rem}
+
+blockquote{border-left:3px solid var(--landranger);padding:2px 0 2px 14px;font-size:1.02rem;font-style:italic;color:var(--slate);margin:16px 0}
+
+/* ---------- bottom nav ---------- */
+nav{
+  position:fixed;bottom:0;left:0;right:0;z-index:30;
+  background:var(--ink);display:flex;
+  padding-bottom:env(safe-area-inset-bottom);
+}
+nav button{
+  flex:1;background:none;border:0;color:#8FA2AB;
+  font-family:'IBM Plex Mono';font-size:.62rem;letter-spacing:.06em;
+  padding:11px 0 9px;cursor:pointer;display:flex;flex-direction:column;gap:3px;align-items:center;
+}
+nav button .ic{font-size:1rem;line-height:1}
+nav button.on{color:var(--paper)}
+nav button.on .ic{color:var(--landranger)}
+
+a{color:var(--landranger);text-decoration:none;font-weight:600}
+.sample{font-family:'IBM Plex Mono';font-size:.6rem;color:var(--muted);letter-spacing:.1em;text-transform:uppercase}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wordmark">SECOND<span>/</span>SUMMIT</div>
+  <div class="gridref">SH 647 556 · ERYRI</div>
+</header>
+
+<!-- ================= HOME ================= -->
+<main id="home" class="page active">
+  <section style="border-bottom:0;padding-bottom:8px">
+    <div class="eyebrow">Second Summit</div>
+    <h1>Long walks, done properly, filmed honestly.</h1>
+    <p style="margin-top:12px">After a career in banking and consulting, I went back to the hills. Second Summit is the record: long routes walked self-supported, tracked live, one at a time. In March it was the Coast to Coast. In October it's the Snowdonia Way.</p>
+    <p><span class="live-pill"><span class="dot"></span>NEXT LIVE · SNOWDONIA WAY · OCT 2026</span></p>
+  </section>
+
+  <div class="ridge-wrap">
+    <svg class="ridge-svg" viewBox="0 0 680 150" role="img" aria-label="A ridgeline: Coast to Coast walked, Snowdonia next, the ridge continuing unnamed beyond">
+      <!-- contour ghost lines -->
+      <path d="M0 120 Q 90 112 170 116 T 340 110 T 510 104 T 680 96" fill="none" stroke="#DAD7CC" stroke-width="1"/>
+      <path d="M0 132 Q 90 126 170 129 T 340 124 T 510 119 T 680 112" fill="none" stroke="#DAD7CC" stroke-width="1"/>
+      <!-- ridgeline: two summits named, the rest fades into weather -->
+      <path d="M0 138 L90 92 L150 116 L250 66 L320 98"
+            fill="none" stroke="#28343B" stroke-width="2.5" stroke-linejoin="round"/>
+      <path d="M320 98 L400 62 L460 84 L540 48 L600 70 L680 36"
+            fill="none" stroke="#28343B" stroke-width="2" stroke-linejoin="round" stroke-dasharray="1 7" stroke-linecap="round" opacity=".55"/>
+      <!-- C2C summit: walked -->
+      <circle cx="90" cy="92" r="5.5" fill="#1E8F54"/>
+      <!-- Snowdonia: next, magenta -->
+      <circle cx="250" cy="66" r="5.5" fill="#C2166B"/>
+    </svg>
+    <div class="ridge-labels">
+      <b>COAST TO COAST ✓</b><b style="color:var(--landranger)">SNOWDONIA WAY · OCT</b><span style="opacity:.6">— we'll see</span>
+    </div>
+  </div>
+
+  <section>
+    <div class="eyebrow">Latest film</div>
+    <div class="vlog" style="flex:none;max-width:100%">
+      <div class="thumb" style="height:180px">▸ film embed</div>
+      <div class="meta"><div class="d">COAST TO COAST · 2026</div><div class="t">172 miles across England: the full story</div></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="eyebrow">Why "second summit"</div>
+    <p>The first summit was work. This is the second. If you're at a similar point and wondering what's next, some of what I've learned along the way might be useful. <a href="#" onclick="go('about');return false;">The background →</a></p>
+  </section>
+</main>
+
+<!-- ================= SNOWDONIA (LIVE MODE) ================= -->
+<main id="live" class="page">
+  <section style="padding-bottom:16px">
+    <div class="eyebrow">Live expedition · Leg 1</div>
+    <h1 style="font-size:1.6rem">Snowdon, Everest &amp; Crib Goch</h1>
+    <p class="small" style="margin-top:8px">Beddgelert → Conwy · 44 miles · 5 days · self-supported · October 2026</p>
+  </section>
+
+  <section>
+    <h2>Where is he now <span class="live-pill" style="margin-left:6px"><span class="dot"></span>TRACKING</span></h2>
+    <div class="map-frame">
+      <iframe src="https://share.garmin.com/tobywise" title="Live Garmin MapShare tracking" loading="lazy"></iframe>
+    </div>
+    <p class="map-note">Position updates every 10 minutes from the inReach. When the tracker pauses overnight, so has he — probably somewhere with a fire.</p>
+  </section>
+
+  <section>
+    <h2>Today's conditions <span class="badge">SAMPLE DATA</span></h2>
+    <div class="cond">
+      <div class="row"><span class="k">Stage</span><span class="v">Day 3 · PYG → Glyders wild camp</span></div>
+      <div class="row"><span class="k">Summits</span><span class="v">Glyder Fach 994m</span></div>
+      <div class="row"><span class="k">Wind on ridges</span><span class="v">SW 35 mph, gusting 50</span></div>
+      <div class="row"><span class="k">Cloud base</span><span class="v">700m, lifting pm</span></div>
+      <div class="row"><span class="k">Rain</span><span class="v">Showers to 11am</span></div>
+      <div class="row"><span class="k">The call</span><span class="v">Decide at breakfast — camp or valley</span></div>
+    </div>
+    <p class="small" style="padding-top:8px">Compiled each morning from the Met Office mountain forecast and MWIS Eryri. The question that matters: what will he be facing today?</p>
+  </section>
+
+  <section>
+    <h2>Daily films</h2>
+    <div class="vlog-strip">
+      <div class="vlog"><div class="thumb">▸</div><div class="meta"><div class="d">DAY 2</div><div class="t">Crib Goch: the knife edge</div></div></div>
+      <div class="vlog"><div class="thumb">▸</div><div class="meta"><div class="d">DAY 1</div><div class="t">Nant Gwynant to the Everest hotel</div></div></div>
+      <div class="vlog"><div class="thumb">▸</div><div class="meta"><div class="d">DAY 0</div><div class="t">Kit shakedown in Beddgelert</div></div></div>
+    </div>
+    <p class="small">Filmed on the hill, uploaded each evening. No support vehicle, no satellite uplink — just what fits in the pack.</p>
+  </section>
+
+  <section>
+    <div class="eyebrow">Field note · sample</div>
+    <p><b>Day 2, Pen-y-Gwryd.</b> The 1953 Everest team trained from this bar. Tomorrow the kit stays in the room and I go up with a daysack, a guide, and every hour of bouldering since August. Wind is the only vote that counts.</p>
+  </section>
+</main>
+
+<!-- ================= C2C (ARCHIVE MODE) ================= -->
+<main id="c2c" class="page">
+  <section style="padding-bottom:16px">
+    <div class="eyebrow">Expedition record · March 2026</div>
+    <h1 style="font-size:1.6rem">Coast to Coast</h1>
+    <p class="small" style="margin-top:8px">St Bees → Robin Hood's Bay · Wainwright's masterwork, walked self-supported</p>
+  </section>
+
+  <section>
+    <div class="stats">
+      <div class="stat"><div class="n">172</div><div class="l">Miles</div></div>
+      <div class="stat"><div class="n">23,180</div><div class="l">Ft ascent</div></div>
+      <div class="stat"><div class="n">16</div><div class="l">Days</div></div>
+      <div class="stat"><div class="n">4</div><div class="l">Wild camps</div></div>
+      <div class="stat"><div class="n">9</div><div class="l">Pub nights</div></div>
+      <div class="stat"><div class="n">1</div><div class="l">Pebble, carried sea to sea</div></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>The route, day by day</h2>
+    <ul class="daylist">
+      <li><span class="dn">D02</span><span class="stage">Ennerdale → Haystacks wild camp — Wainwright's ashes at Innominate Tarn</span><span class="mi">9.9 mi</span></li>
+      <li><span class="dn">D05</span><span class="stage">Patterdale → Shap over Kidsty Pike at dawn, 780m</span><span class="mi">12.6 mi</span></li>
+      <li><span class="dn">D06</span><span class="stage">Shap → Kirkby Stephen — the one that nearly broke me</span><span class="mi">18.9 mi</span></li>
+      <li><span class="dn">D16</span><span class="stage">Grosmont → Robin Hood's Bay — pebble into the North Sea</span><span class="mi">9.5 mi</span></li>
+    </ul>
+    <p class="small" style="padding-top:10px">Full 16-day log, route flythrough and film to follow here.</p>
+  </section>
+
+  <section>
+    <h2>Hard-won advice</h2>
+    <div class="rulecard do"><span class="tag">DO</span><p>Get your boots fitted by a specialist. A five-width fitting changed everything — most walkers are in boots a size too small.</p></div>
+    <div class="rulecard do"><span class="tag">DO</span><p>Split Patterdale–Shap with a camp at Angle Tarn. Kidsty Pike at dawn instead of at the end of your strength.</p></div>
+    <div class="rulecard dont"><span class="tag">DON'T</span><p>Trust the itinerary that intersperses 3-mile strolls with 25-mile epics. Cap the days. The load does the damage, not the miles.</p></div>
+    <div class="rulecard dont"><span class="tag">DON'T</span><p>Film and walk at the same time on the hill. Ever.</p></div>
+    <p class="small">Full dos &amp; don'ts film and the complete kit list with verdicts to follow.</p>
+  </section>
+</main>
+
+<!-- ================= BACKGROUND ================= -->
+<main id="about" class="page">
+  <section style="padding-bottom:16px">
+    <div class="eyebrow">The background</div>
+    <h1 style="font-size:1.6rem">Toby Wise, FRGS</h1>
+  </section>
+  <section>
+    <p>I spent my career in banking and consulting. A couple of years ago I started walking seriously again, and found I didn't want to stop. Second Summit is the result: long routes, walked self-supported, planned carefully and filmed as I go.</p>
+    <p>In March I walked the Coast to Coast — 172 miles from the Irish Sea to the North Sea, camping high and sleeping in old pubs. This October it's the northern half of the Snowdonia Way. What comes after that, I'll decide when I'm back.</p>
+    <blockquote>The first summit was work. This is the second.</blockquote>
+    <p>If you're at a similar stage — the career largely done, wondering what fills the space — this site is partly for you. The routes, the kit that worked and didn't, the honest account of what a 54-year-old body can be trained to do. In time I'd like to tell other people's second-summit stories here too, not just mine.</p>
+    <p>Fellow of the Royal Geographical Society. Trustee of the Gwennili Sailing Trust, which takes veterans offshore under sail.</p>
+    <p class="small">Piece-to-camera film to sit here, with this as the written version beneath it.</p>
+  </section>
+  <section>
+    <div class="eyebrow">Partners</div>
+    <p class="small">If your brand fits this world and you'd like to talk, <a href="#">get in touch →</a></p>
+  </section>
+</main>
+
+<nav>
+  <button class="on" data-p="home"><span class="ic">▲</span>HOME</button>
+  <button data-p="live"><span class="ic">●</span>LIVE</button>
+  <button data-p="c2c"><span class="ic">✓</span>C2C</button>
+  <button data-p="about"><span class="ic">§</span>ABOUT</button>
+</nav>
+
+<script>
+function go(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id===id));
+  document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.p===id));
+  window.scrollTo({top:0});
+}
+document.querySelectorAll('nav button').forEach(b=>b.addEventListener('click',()=>go(b.dataset.p)));
+</script>
+</body>
+</html>
