@@ -142,11 +142,13 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
     for (let n = 2; taken.has(slug); n++) slug = `${base}-${n}`;
 
     // ---- upload photos as blobs ---------------------------------------
-    const photoPaths: string[] = [];
+    // Drop empties up front so photo N always lines up with its path and alt
+    // text below; skipping mid-loop would shift them out of step.
+    const usable = photos.filter((photo) => photo?.data);
+    const uploaded: { path: string; alt: string }[] = [];
     const tree: { path: string; mode: '100644'; type: 'blob'; sha: string }[] = [];
 
-    for (const [i, photo] of photos.entries()) {
-      if (!photo?.data) continue;
+    for (const [i, photo] of usable.entries()) {
       const ext = (photo.ext ?? 'jpg').replace(/[^a-z0-9]/gi, '').toLowerCase() || 'jpg';
       const path = `${ASSETS_DIR}/${slug}/${i + 1}.${ext}`;
       const blob = await gh<{ sha: string }>('/git/blobs', {
@@ -154,7 +156,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
         body: JSON.stringify({ content: photo.data, encoding: 'base64' }),
       });
       tree.push({ path, mode: '100644', type: 'blob', sha: blob.sha });
-      photoPaths.push(path);
+      uploaded.push({ path, alt: photo.alt?.trim() ?? '' });
     }
 
     // ---- assemble the markdown ----------------------------------------
@@ -180,8 +182,8 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
       day != null && Number.isFinite(day) ? `day: ${day}` : null,
       payload.distance?.trim() ? `distance: ${yamlStr(payload.distance.trim())}` : null,
       payload.video?.trim() ? `video: ${yamlStr(payload.video.trim())}` : null,
-      photoPaths[0] ? `cover: ${yamlStr(rel(photoPaths[0]))}` : null,
-      photoPaths[0] ? `coverAlt: ${yamlStr(photos[0]?.alt?.trim() || title)}` : null,
+      uploaded[0] ? `cover: ${yamlStr(rel(uploaded[0].path))}` : null,
+      uploaded[0] ? `coverAlt: ${yamlStr(uploaded[0].alt || title)}` : null,
       conditionLines.length ? 'conditions:' : null,
       ...conditionLines,
       '---',
@@ -190,9 +192,9 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
       .join('\n');
 
     // The cover is rendered by the post layout; the rest go inline below.
-    const inline = photoPaths
+    const inline = uploaded
       .slice(1)
-      .map((path, i) => `![${(photos[i + 1]?.alt ?? '').replace(/[[\]]/g, '')}](${rel(path)})`)
+      .map((photo) => `![${photo.alt.replace(/[[\]]/g, '')}](${rel(photo.path)})`)
       .join('\n\n');
 
     const markdown = [frontmatter, '', body, inline && `\n${inline}`].filter(Boolean).join('\n');
@@ -239,7 +241,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
       slug,
       url: `/posts/${slug}/`,
       commit: commit.sha.slice(0, 7),
-      photos: photoPaths.length,
+      photos: uploaded.length,
     });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
