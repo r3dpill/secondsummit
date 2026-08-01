@@ -344,7 +344,10 @@ hr {
 }
 
 .ridge-labels .later {
-  opacity: 0.6;
+  /* Faded, because the walks beyond Snowdonia are not decided yet. At 0.6 it
+     composited to 3.59:1 against the page and failed to read at 9.6px; 0.78
+     keeps the recessive feel and clears 4.5:1. */
+  opacity: 0.78;
 }
 
 /* ---------- live pill ---------- */
