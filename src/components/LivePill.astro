@@ -1,0 +1,10 @@
+---
+interface Props {
+  /** Pill text, e.g. "TRACKING" or "NEXT LIVE · SNOWDONIA WAY · OCT 2026". */
+  label: string;
+}
+
+const { label } = Astro.props;
+---
+
+<span class="live-pill"><span class="dot" aria-hidden="true"></span>{label}</span>

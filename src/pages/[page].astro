@@ -1,0 +1,34 @@
+---
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import type { GetStaticPaths } from 'astro';
+import Base from '../layouts/Base.astro';
+
+/**
+ * Long-form pages imported from the old site (currently "The Walk").
+ * Static routes such as /background and /wise-brothers take priority over this
+ * dynamic one, so adding a markdown file to src/content/pages/ is enough to
+ * publish a new page at /<filename>/.
+ */
+export const getStaticPaths: GetStaticPaths = async () => {
+  const pages = await getCollection('pages', ({ data }) => import.meta.env.DEV || !data.draft);
+  return pages.map((page) => ({ params: { page: page.id }, props: { page } }));
+};
+
+interface Props {
+  page: CollectionEntry<'pages'>;
+}
+
+const { page } = Astro.props;
+const { Content } = await render(page);
+---
+
+<Base title={page.data.title} description={page.data.description} gridref={page.data.gridref}>
+  <section style="padding-bottom:16px">
+    {page.data.eyebrow && <div class="eyebrow">{page.data.eyebrow}</div>}
+    <h1 class="sub">{page.data.title}</h1>
+  </section>
+
+  <section class="prose">
+    <Content />
+  </section>
+</Base>

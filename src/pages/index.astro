@@ -1,0 +1,62 @@
+---
+import Base from '../layouts/Base.astro';
+import Ridgeline from '../components/Ridgeline.astro';
+import LivePill from '../components/LivePill.astro';
+import VideoEmbed from '../components/VideoEmbed.astro';
+import PostCard from '../components/PostCard.astro';
+import { getPosts } from '../lib/posts';
+import { FILMS } from '../site';
+
+const latestPosts = (await getPosts()).slice(0, 3);
+---
+
+<Base gridref="SH 647 556 · ERYRI">
+  <section class="flush" style="padding-bottom:8px">
+    <div class="eyebrow">Second Summit</div>
+    <h1>Long walks, done properly, filmed honestly.</h1>
+    <div class="placeholder lede">
+      <p>
+        After a career in banking and consulting, I went back to the hills. Second Summit is the
+        record: long routes walked self-supported, tracked live, one at a time. In March it was the
+        Coast to Coast. In October it's the Snowdonia Way.
+      </p>
+    </div>
+    <p style="margin-top:12px">
+      <LivePill label="NEXT LIVE · SNOWDONIA WAY · OCT 2026" />
+    </p>
+  </section>
+
+  <Ridgeline />
+
+  <section>
+    <div class="eyebrow">Latest film</div>
+    <VideoEmbed id={FILMS.latest.id} kicker={FILMS.latest.kicker} title={FILMS.latest.title} wide />
+  </section>
+
+  {
+    latestPosts.length > 0 && (
+      <section>
+        <h2>From the walk</h2>
+        <ul class="postlist">
+          {latestPosts.map((post, i) => (
+            <PostCard post={post} showCover={i === 0} />
+          ))}
+        </ul>
+        <p class="small" style="padding-top:12px">
+          <a href="/posts/">All posts →</a>
+        </p>
+      </section>
+    )
+  }
+
+  <section>
+    <div class="eyebrow">Why "second summit"</div>
+    <div class="placeholder">
+      <p>
+        The first summit was work. This is the second. If you're at a similar point and wondering
+        what's next, some of what I've learned along the way might be useful.
+      </p>
+    </div>
+    <p style="margin-top:12px"><a href="/background/">The background →</a></p>
+  </section>
+</Base>

@@ -1,0 +1,39 @@
+---
+import { Image } from 'astro:assets';
+import type { Post } from '../lib/posts';
+import { postUrl, formatDate } from '../lib/posts';
+import { CATEGORIES } from '../site';
+
+interface Props {
+  post: Post;
+  /** Show the cover photo. Off for dense lists. */
+  showCover?: boolean;
+}
+
+const { post, showCover = true } = Astro.props;
+const { title, description, pubDate, category, cover, coverAlt, day } = post.data;
+const kicker = day != null ? `Day ${day} · ${CATEGORIES[category].label}` : CATEGORIES[category].label;
+---
+
+<li class="postcard">
+  <a class="hit" href={postUrl(post)}>
+    {
+      showCover && cover && (
+        <Image
+          class="cover"
+          src={cover}
+          alt={coverAlt ?? ''}
+          widths={[320, 640, 960]}
+          sizes="(min-width: 720px) 680px, 100vw"
+          loading="lazy"
+        />
+      )
+    }
+    <div class="body">
+      <div class="kicker">{kicker}</div>
+      <h3>{title}</h3>
+      {description && <p>{description}</p>}
+      <div class="postmeta">{formatDate(pubDate)}</div>
+    </div>
+  </a>
+</li>

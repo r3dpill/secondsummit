@@ -1,0 +1,111 @@
+---
+import '@fontsource-variable/bricolage-grotesque/wght.css';
+import '@fontsource-variable/public-sans/wght.css';
+import '@fontsource/ibm-plex-mono/latin-400.css';
+import '@fontsource/ibm-plex-mono/latin-500.css';
+import '../styles/global.css';
+
+import { SITE, NAV } from '../site';
+
+interface Props {
+  title?: string;
+  description?: string;
+  /** Mono grid reference shown top-right; each page carries its own. */
+  gridref?: string;
+  /** Overrides the OG image (absolute or site-root-relative path). */
+  image?: string;
+  /** Omit from sitemap / discourage indexing (used by /post). */
+  noindex?: boolean;
+}
+
+const {
+  title,
+  description = SITE.description,
+  gridref = 'SH 647 556 · ERYRI',
+  image,
+  noindex = false,
+} = Astro.props;
+
+const pageTitle = title ? `${title} · ${SITE.title}` : `${SITE.title} — ${SITE.tagline}`;
+const canonical = new URL(Astro.url.pathname, Astro.site ?? SITE.url);
+const ogImage = new URL(image ?? '/og-default.png', Astro.site ?? SITE.url);
+
+// Normalise for nav highlighting: "/coast-to-coast" and "/coast-to-coast/" match,
+// and a post under a section lights up that section's tab.
+const path = Astro.url.pathname.replace(/\/+$/, '') || '/';
+const isCurrent = (href: string) => {
+  const h = href.replace(/\/+$/, '') || '/';
+  return h === '/' ? path === '/' : path === h || path.startsWith(h + '/');
+};
+---
+
+<!doctype html>
+<html lang="en-GB">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical.href} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={SITE.title} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical.href} />
+    <meta property="og:image" content={ogImage.href} />
+    <meta property="og:locale" content={SITE.locale} />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <meta name="theme-color" content="#28343B" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title={`${SITE.title} — all posts`}
+      href={new URL('/rss.xml', Astro.site ?? SITE.url).href}
+    />
+    <slot name="head" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <header class="site-header">
+      <a class="wordmark" href="/">SECOND<span>/</span>SUMMIT</a>
+      <div class="gridref">{gridref}</div>
+    </header>
+
+    <nav class="site-nav" aria-label="Primary">
+      {
+        NAV.map((item) => (
+          <a href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>
+            <span class="ic" aria-hidden="true">
+              {item.icon}
+            </span>
+            {item.label}
+          </a>
+        ))
+      }
+    </nav>
+
+    <main id="main" class="page">
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <div class="links">
+        <a href="/coast-to-coast/">Coast to Coast</a>
+        <a href="/snowdonia-way/">Snowdonia Way</a>
+        <a href="/wise-brothers/">Wise Brothers</a>
+        <a href="/background/">Background</a>
+        <a href="/rss.xml">RSS</a>
+      </div>
+      <p>
+        © {new Date().getFullYear()} {SITE.author}. Walked, filmed and written by hand.
+      </p>
+    </footer>
+  </body>
+</html>

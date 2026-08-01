@@ -1,0 +1,18 @@
+---
+interface Props {
+  items: readonly { readonly n: string; readonly l: string }[];
+}
+
+const { items } = Astro.props;
+---
+
+<div class="stats">
+  {
+    items.map((s) => (
+      <div class="stat">
+        <div class="n">{s.n}</div>
+        <div class="l">{s.l}</div>
+      </div>
+    ))
+  }
+</div>

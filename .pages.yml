@@ -1,0 +1,136 @@
+# Pages CMS (pagescms.org) — the BACKUP posting route.
+#
+# The primary route is /post on the site itself. This config exists so that if
+# /post ever fails on the hill, there is a second, completely independent way
+# to write a post: sign in at app.pagescms.org with GitHub, pick this repo, and
+# edit. It commits to the same repo, so the site rebuilds either way.
+#
+# The fields here mirror src/content.config.ts. If you add a field to the
+# content schema, add it here too or Pages CMS will strip it on save.
+
+media:
+  input: src/assets/field
+  output: ../../assets/field
+  categories: [image]
+  extensions: [jpg, jpeg, png, webp]
+
+settings:
+  content:
+    merge: false
+
+content:
+  - name: posts
+    label: Posts
+    type: collection
+    path: src/content/posts
+    filename: '{fields.title}.md'
+    icon: pencil
+    view:
+      fields: [title, pubDate, category, day]
+      sort: [pubDate, title]
+      default:
+        sort: pubDate
+        order: desc
+    fields:
+      - name: title
+        label: Title
+        type: string
+        required: true
+
+      - name: pubDate
+        label: Date
+        type: date
+        required: true
+        options:
+          format: yyyy-MM-dd'T'HH:mm:ssXXX
+          time: true
+
+      - name: category
+        label: Walk
+        type: select
+        required: true
+        default: snowdonia-way
+        options:
+          values:
+            - { value: snowdonia-way, label: Snowdonia Way }
+            - { value: coast-to-coast, label: Coast to Coast }
+            - { value: training, label: Training }
+
+      - name: description
+        label: Summary
+        type: text
+        description: One line, used on cards and in search results. Optional.
+
+      - name: day
+        label: Day number
+        type: number
+        description: Day within the walk. Drives the day-by-day index. Optional.
+        options:
+          step: 1
+          min: 0
+
+      - name: distance
+        label: Distance
+        type: string
+        description: 'Free text, e.g. "9.9 mi". Optional.'
+
+      - name: cover
+        label: Cover photo
+        type: image
+        description: First photo of the day. Shown at the top of the post.
+
+      - name: coverAlt
+        label: Cover description
+        type: string
+        description: What the cover photo shows, for screen readers.
+
+      - name: video
+        label: YouTube video ID
+        type: string
+        description: 'Just the ID, e.g. dQw4w9WgXcQ — not the full URL. Optional.'
+
+      - name: conditions
+        label: Today's conditions
+        type: object
+        description: >-
+          Fills the conditions card on the Snowdonia Way page. Every field is
+          optional and the card only shows the rows you fill in.
+        fields:
+          - { name: stage, label: Stage, type: string }
+          - { name: summits, label: Summits, type: string }
+          - { name: wind, label: Wind on ridges, type: string }
+          - { name: cloudBase, label: Cloud base, type: string }
+          - { name: rain, label: Rain, type: string }
+          - { name: call, label: The call, type: string }
+
+      - name: draft
+        label: Draft
+        type: boolean
+        default: false
+        description: Draft posts are not published.
+
+      - name: legacyUrl
+        label: Old site URL
+        type: string
+        description: Original wisecoasttocoast.com path. Leave alone on new posts.
+
+      - name: body
+        label: Words
+        type: rich-text
+
+  - name: pages
+    label: Pages
+    type: collection
+    path: src/content/pages
+    filename: '{fields.title}.md'
+    icon: file-text
+    view:
+      fields: [title, description]
+    fields:
+      - { name: title, label: Title, type: string, required: true }
+      - { name: eyebrow, label: Eyebrow, type: string }
+      - { name: description, label: Summary, type: text }
+      - { name: gridref, label: Grid reference, type: string }
+      - { name: legacyUrl, label: Old site URL, type: string }
+      - { name: draft, label: Draft, type: boolean, default: false }
+      - { name: body, label: Body, type: rich-text }

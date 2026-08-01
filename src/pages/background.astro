@@ -1,0 +1,86 @@
+---
+import Base from '../layouts/Base.astro';
+import VideoEmbed from '../components/VideoEmbed.astro';
+import { FILMS, CONTACT_EMAIL } from '../site';
+
+/**
+ * Placeholder structure — Toby's copy to come (brief, "Site structure").
+ * Everything inside .placeholder is scaffolding text to be replaced; the
+ * headings and the video slot are the structure worth keeping.
+ */
+---
+
+<Base
+  title="Background"
+  description="Toby Wise — a career in banking and consulting, then back to the hills. Why Second Summit exists."
+  gridref="SO 594 775 · CLEE HILL"
+>
+  <section style="padding-bottom:16px">
+    <div class="eyebrow">The background</div>
+    <h1 class="sub">Toby Wise, FRGS</h1>
+  </section>
+
+  <section>
+    <VideoEmbed
+      id={FILMS.background.id}
+      kicker={FILMS.background.kicker}
+      title={FILMS.background.title}
+      wide
+    />
+    <p class="small" style="padding-top:8px">
+      Piece-to-camera film sits here, with the written version beneath it.
+    </p>
+  </section>
+
+  <section>
+    <div class="placeholder">
+      <p>
+        I spent my career in banking and consulting. A couple of years ago I started walking
+        seriously again, and found I didn't want to stop. Second Summit is the result: long routes,
+        walked self-supported, planned carefully and filmed as I go.
+      </p>
+      <p>
+        In March I walked the Coast to Coast — 172 miles from the Irish Sea to the North Sea, camping
+        high and sleeping in old pubs. This October it's the northern half of the Snowdonia Way. What
+        comes after that, I'll decide when I'm back.
+      </p>
+    </div>
+
+    <blockquote>The first summit was work. This is the second.</blockquote>
+
+    <div class="placeholder">
+      <p>
+        If you're at a similar stage — the career largely done, wondering what fills the space — this
+        site is partly for you. The routes, the kit that worked and didn't, the honest account of
+        what a 54-year-old body can be trained to do. In time I'd like to tell other people's
+        second-summit stories here too, not just mine.
+      </p>
+    </div>
+
+    <p style="margin-top:12px">
+      Fellow of the Royal Geographical Society. Trustee of the Gwennili Sailing Trust, which takes
+      veterans offshore under sail.
+    </p>
+  </section>
+
+  <section>
+    <div class="eyebrow">The walks</div>
+    <p>
+      <a href="/coast-to-coast/">Coast to Coast</a> — 172 miles, March 2026, walked self-supported.
+    </p>
+    <p>
+      <a href="/snowdonia-way/">Snowdonia Way</a> — 44 miles, October 2026, tracked live.
+    </p>
+    <p class="small" style="padding-top:8px">
+      Ben walked the final days of the Coast to Coast: <a href="/wise-brothers/">the Wise Brothers</a>.
+    </p>
+  </section>
+
+  <section>
+    <div class="eyebrow">Partners</div>
+    <p class="small">
+      If your brand fits this world and you'd like to talk,
+      <a href={`mailto:${CONTACT_EMAIL}`}>get in touch →</a>
+    </p>
+  </section>
+</Base>

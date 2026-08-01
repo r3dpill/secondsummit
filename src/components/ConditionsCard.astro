@@ -1,0 +1,59 @@
+---
+import type { Conditions } from '../content.config';
+
+/**
+ * "Today's conditions" — renders from the frontmatter of the most recent daily
+ * post, so posting the morning diary entry updates it with no second workflow.
+ * Every field is optional; the card renders nothing at all when none are set.
+ */
+interface Props {
+  conditions?: Conditions;
+  /** Date of the post the figures came from. */
+  updated?: Date;
+}
+
+const { conditions, updated } = Astro.props;
+
+const rows = conditions
+  ? [
+      { k: 'Stage', v: conditions.stage },
+      { k: 'Summits', v: conditions.summits },
+      { k: 'Wind on ridges', v: conditions.wind },
+      { k: 'Cloud base', v: conditions.cloudBase },
+      { k: 'Rain', v: conditions.rain },
+      { k: 'The call', v: conditions.call },
+    ].filter((row): row is { k: string; v: string } => Boolean(row.v))
+  : [];
+
+const stamp = updated
+  ? new Intl.DateTimeFormat('en-GB', {
+      day: 'numeric',
+      month: 'short',
+      timeZone: 'Europe/London',
+    }).format(updated)
+  : null;
+---
+
+{
+  rows.length > 0 && (
+    <div class="cond">
+      {rows.map((row) => (
+        <div class="row">
+          <span class="k">{row.k}</span>
+          <span class="v">{row.v}</span>
+        </div>
+      ))}
+      {stamp && <p class="small stamp">Filed {stamp} from the hill.</p>}
+    </div>
+  )
+}
+
+<style>
+  .stamp {
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding-top: 10px;
+  }
+</style>

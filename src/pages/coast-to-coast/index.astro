@@ -1,0 +1,94 @@
+---
+import Base from '../../layouts/Base.astro';
+import Stats from '../../components/Stats.astro';
+import RuleCard from '../../components/RuleCard.astro';
+import VideoEmbed from '../../components/VideoEmbed.astro';
+import { getPostsByCategory, inWalkOrder, postUrl, formatShortDate } from '../../lib/posts';
+import { C2C_STATS, FILMS } from '../../site';
+
+const posts = await getPostsByCategory('coast-to-coast');
+const days = inWalkOrder(posts);
+---
+
+<Base
+  title="Coast to Coast"
+  description="St Bees to Robin Hood's Bay, March 2026 — 172 miles, 23,180 feet of ascent, 16 days, walked self-supported. The day-by-day record."
+  gridref="NZ 953 048 · ROBIN HOOD'S BAY"
+>
+  <section style="padding-bottom:16px">
+    <div class="eyebrow">Expedition record · March 2026</div>
+    <h1 class="sub">Coast to Coast</h1>
+    <p class="small" style="margin-top:8px">
+      St Bees → Robin Hood's Bay · Wainwright's masterwork, walked self-supported
+    </p>
+  </section>
+
+  <section>
+    <Stats items={C2C_STATS} />
+  </section>
+
+  <section>
+    <div class="eyebrow">The film</div>
+    <VideoEmbed
+      id={FILMS.coastToCoast.id}
+      kicker={FILMS.coastToCoast.kicker}
+      title={FILMS.coastToCoast.title}
+      wide
+    />
+  </section>
+
+  <section>
+    <h2>The route, day by day</h2>
+    {
+      days.length > 0 ? (
+        <ul class="daylist">
+          {days.map((post) => (
+            <li>
+              <span class="dn">
+                {post.data.day != null ? `D${String(post.data.day).padStart(2, '0')}` : formatShortDate(post.data.pubDate)}
+              </span>
+              <span class="stage">
+                <a href={postUrl(post)}>{post.data.title}</a>
+              </span>
+              {post.data.distance && <span class="mi">{post.data.distance}</span>}
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p class="small">The daily log will appear here.</p>
+      )
+    }
+    <p class="small" style="padding-top:10px">
+      The full route, the history and what walking it in late March meant:
+      <a href="/the-walk/">The Walk →</a>
+    </p>
+  </section>
+
+  <section>
+    <h2>Hard-won advice</h2>
+    <RuleCard kind="do">
+      Get your boots fitted by a specialist. A five-width fitting changed everything — most walkers
+      are in boots a size too small.
+    </RuleCard>
+    <RuleCard kind="do">
+      Split Patterdale–Shap with a camp at Angle Tarn. Kidsty Pike at dawn instead of at the end of
+      your strength.
+    </RuleCard>
+    <RuleCard kind="dont">
+      Trust the itinerary that intersperses 3-mile strolls with 25-mile epics. Cap the days. The load
+      does the damage, not the miles.
+    </RuleCard>
+    <RuleCard kind="dont">Film and walk at the same time on the hill. Ever.</RuleCard>
+    <p class="small">
+      Full dos &amp; don'ts film and the complete kit list with verdicts to follow.
+    </p>
+  </section>
+
+  <section>
+    <div class="eyebrow">Not walked alone</div>
+    <p>
+      Ben joined at Richmond for the final push east across the Vale of Mowbray and the North York
+      Moors. <a href="/wise-brothers/">The Wise Brothers →</a>
+    </p>
+  </section>
+</Base>

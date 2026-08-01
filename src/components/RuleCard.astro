@@ -1,0 +1,12 @@
+---
+interface Props {
+  kind: 'do' | 'dont';
+}
+
+const { kind } = Astro.props;
+---
+
+<div class:list={['rulecard', kind]}>
+  <span class="tag">{kind === 'do' ? 'DO' : "DON'T"}</span>
+  <p><slot /></p>
+</div>

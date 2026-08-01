@@ -1,0 +1,118 @@
+---
+import Base from '../../layouts/Base.astro';
+import LivePill from '../../components/LivePill.astro';
+import ConditionsCard from '../../components/ConditionsCard.astro';
+import VideoEmbed from '../../components/VideoEmbed.astro';
+import PostCard from '../../components/PostCard.astro';
+import { getPostsByCategory, inWalkOrder, postUrl } from '../../lib/posts';
+import { MAPSHARE_URL, SNOWDONIA, YOUTUBE_CHANNEL } from '../../site';
+
+const posts = await getPostsByCategory('snowdonia-way');
+
+// The conditions card reads the most recent post that carries any conditions
+// frontmatter, so filing the morning diary entry updates it with no second
+// workflow. Falls back to nothing at all before the walk starts.
+const latestWithConditions = posts.find((p) => p.data.conditions);
+
+// Newest film first along the strip.
+const films = [...posts].filter((p) => p.data.video).reverse();
+const dayIndex = inWalkOrder(posts);
+---
+
+<Base
+  title="Snowdonia Way"
+  description={`Live from the Snowdonia Way, October 2026. ${SNOWDONIA.strapline}`}
+  gridref="SH 647 556 · ERYRI"
+>
+  <section style="padding-bottom:16px">
+    <div class="eyebrow">Live expedition · Leg 1</div>
+    <h1 class="sub">Snowdon, Everest &amp; Crib Goch</h1>
+    <p class="small" style="margin-top:8px">{SNOWDONIA.strapline}</p>
+  </section>
+
+  <section>
+    <h2>Where is he now <LivePill label="TRACKING" /></h2>
+    <div class="map-frame">
+      <iframe src={MAPSHARE_URL} title="Live Garmin MapShare tracking" loading="lazy"></iframe>
+    </div>
+    <p class="map-note">
+      Position updates every 10 minutes from the inReach. When the tracker pauses overnight, so has
+      he — probably somewhere with a fire.
+    </p>
+  </section>
+
+  {
+    latestWithConditions && (
+      <section>
+        <h2>Today's conditions</h2>
+        <ConditionsCard
+          conditions={latestWithConditions.data.conditions}
+          updated={latestWithConditions.data.pubDate}
+        />
+        <p class="small" style="padding-top:8px">
+          Compiled each morning from the Met Office mountain forecast and MWIS Eryri. The question
+          that matters: what will he be facing today?
+        </p>
+      </section>
+    )
+  }
+
+  {
+    films.length > 0 && (
+      <section>
+        <h2>Daily films</h2>
+        <div class="vlog-strip">
+          {films.map((post) => (
+            <div class="vlog">
+              <VideoEmbed
+                id={post.data.video}
+                kicker={post.data.day != null ? `Day ${post.data.day}` : undefined}
+                title={post.data.title}
+              />
+            </div>
+          ))}
+        </div>
+        <p class="small">
+          Filmed on the hill, uploaded each evening. No support vehicle, no satellite uplink — just
+          what fits in the pack. <a href={YOUTUBE_CHANNEL}>The channel →</a>
+        </p>
+      </section>
+    )
+  }
+
+  <section>
+    <h2>Field notes</h2>
+    {
+      posts.length > 0 ? (
+        <>
+          <ul class="postlist">
+            {posts.map((post, i) => (
+              <PostCard post={post} showCover={i === 0} />
+            ))}
+          </ul>
+          {dayIndex.length > 3 && (
+            <ul class="daylist" style="padding-top:16px">
+              {dayIndex.map((post) => (
+                <li>
+                  <span class="dn">{post.data.day != null ? `D${String(post.data.day).padStart(2, '0')}` : '—'}</span>
+                  <span class="stage">
+                    <a href={postUrl(post)}>{post.data.title}</a>
+                  </span>
+                  {post.data.distance && <span class="mi">{post.data.distance}</span>}
+                </li>
+              ))}
+            </ul>
+          )}
+        </>
+      ) : (
+        <div class="placeholder">
+          <p>
+            Nothing filed yet — the walk starts in October 2026. Daily entries will appear here as
+            they are posted from the hill, newest first, and the conditions card above will update
+            with them.
+          </p>
+        </div>
+      )
+    }
+  </section>
+</Base>

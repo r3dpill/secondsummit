@@ -1,0 +1,14 @@
+# Copy to .dev.vars for local testing of the posting flow (.dev.vars is gitignored).
+# In production these are set as Cloudflare Pages environment variables/secrets.
+
+# The passphrase typed at /post.
+POST_PASSPHRASE=choose-a-long-passphrase
+
+# Random string used to sign the session cookie. Changing it signs everyone out.
+SESSION_SECRET=generate-with-openssl-rand-base64-32
+
+# Fine-grained GitHub PAT, scoped to this repo only, Contents: read & write.
+GITHUB_TOKEN=github_pat_...
+
+GITHUB_REPO=r3dpill/secondsummit
+GITHUB_BRANCH=main

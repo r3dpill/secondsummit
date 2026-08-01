@@ -1,0 +1,234 @@
+---
+import { Image } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import tobyProfile from '../assets/c2c/Toby_Profile.jpg';
+import benProfile from '../assets/c2c/Ben_Profile.jpg';
+
+/**
+ * Retained from wisecoasttocoast.com (/about/). The original was a custom HTML
+ * block carrying its own dark theme; the content is the same, rebuilt against
+ * the Second Summit design system.
+ */
+
+const profiles = [
+  {
+    name: 'Toby',
+    role: 'Days 1–16 · the full crossing',
+    image: tobyProfile,
+    alt: 'Toby Wise on the hilltops, full pack',
+    bio: 'Walked the first ten days solo and was joined by Ben for the final push. Hero: Shackleton. Navigation: Garmin GPSMap 67i. Worst fear: bad beer.',
+  },
+  {
+    name: 'Ben',
+    role: "Days 10–16 · Richmond to Robin Hood's Bay",
+    image: benProfile,
+    alt: 'Ben Wise at the trig point, ready for the hills',
+    bio: "Joined from Richmond for the final days across the North York Moors to the finish. Worst fear: injury. Most likely to: turn up. Least likely to: give up.",
+  },
+];
+
+const trumps = [
+  ['Pub order', 'Wainwright Ale', 'Orange & lemonade'],
+  ['Navigation', 'Garmin GPSMap 67i', 'Toby'],
+  ['Pack weight', '15.1 kg', '15 kg'],
+  ['Walking hero', 'John Rae', 'Ranulph Fiennes'],
+  ['Worst fear', 'Bad beer', 'Injury'],
+  ['Morning person', '2/10', '9/10'],
+  ['Special skill', 'Hilariously funny', 'Water divining'],
+  ['Useless skill', 'French Lit O-Level', 'MS Excel'],
+  ['Most likely to…', 'Get up late', 'Turn up'],
+  ['Song on day 12', 'Europe — The Final Countdown', 'D:Ream — Things Can Only Get Better'],
+  ['Teleport home?', 'Day 3 in the Lakes', 'Day 1 — to collect things I forgot'],
+];
+---
+
+<Base
+  title="The Wise Brothers"
+  description="Two brothers, 174 miles, and a Top Trumps scorecard filled in independently. Toby and Ben Wise on the Coast to Coast."
+  gridref="NZ 171 007 · RICHMOND"
+>
+  <section style="padding-bottom:16px">
+    <div class="eyebrow">Not walked alone</div>
+    <h1 class="sub">The Wise Brothers</h1>
+    <p class="small" style="margin-top:8px">
+      Two brothers. 174 miles. Hopefully still speaking to each other by the finish line.
+    </p>
+  </section>
+
+  <section>
+    <div class="profiles">
+      {
+        profiles.map((p) => (
+          <article class="profile">
+            <Image
+              src={p.image}
+              alt={p.alt}
+              widths={[240, 480]}
+              sizes="(min-width: 720px) 330px, 50vw"
+              loading="eager"
+            />
+            <div class="info">
+              <h2>{p.name}</h2>
+              <div class="role">{p.role}</div>
+              <p>{p.bio}</p>
+            </div>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+
+  <section>
+    <h2>Top Trumps</h2>
+    <p class="small" style="margin-bottom:12px">
+      The brothers filled these in independently. Some answers were suspicious.
+    </p>
+    <div class="trumps">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Category</th>
+            <th scope="col">Toby</th>
+            <th scope="col">Ben</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            trumps.map(([category, toby, ben]) => (
+              <tr>
+                <th scope="row">{category}</th>
+                <td>{toby}</td>
+                <td>{ben}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+    <div class="callout">
+      <p>
+        <b>Shared verdict:</b> favourite trail snack — both said flapjack. Best feature as a walking
+        partner? Toby: optimism. Worst feature? Over-optimism. Ben's best and worst feature? Both
+        simply: humour.
+      </p>
+    </div>
+  </section>
+
+  <section>
+    <h2>The plan</h2>
+    <p>
+      Toby walked from St Bees on 10 March, solo. Ben joined at Richmond on Day 10 for the final push
+      across the Cleveland Hills and the North York Moors to Robin Hood's Bay.
+    </p>
+    <p class="small" style="padding-top:8px">
+      Ben is likely to join Leg 2 in April 2027. <a href="/coast-to-coast/">The Coast to Coast record →</a>
+    </p>
+  </section>
+</Base>
+
+<style>
+  .profiles {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .profile {
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: var(--card);
+    overflow: hidden;
+  }
+
+  .profile :global(img) {
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    object-fit: cover;
+    object-position: top;
+    display: block;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .profile .info {
+    padding: 12px 14px;
+  }
+
+  .profile h2 {
+    font-size: 1.15rem;
+    margin-bottom: 2px;
+  }
+
+  .profile .role {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--landranger);
+    margin-bottom: 8px;
+  }
+
+  .profile p {
+    font-size: 0.82rem;
+    color: var(--muted);
+  }
+
+  .trumps {
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: var(--card);
+    overflow-x: auto;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+  }
+
+  thead th {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-align: left;
+    padding: 10px 12px;
+    background: var(--paper);
+    border-bottom: 1px solid var(--line);
+  }
+
+  thead th:nth-child(2) {
+    color: var(--landranger);
+  }
+
+  thead th:nth-child(3) {
+    color: var(--live);
+  }
+
+  tbody th {
+    font-weight: 500;
+    color: var(--muted);
+    text-align: left;
+    font-size: 0.78rem;
+  }
+
+  tbody th,
+  tbody td {
+    padding: 9px 12px;
+    border-bottom: 1px dashed var(--line);
+    vertical-align: top;
+  }
+
+  tbody tr:last-child th,
+  tbody tr:last-child td {
+    border-bottom: 0;
+  }
+
+  .callout {
+    margin-top: 12px;
+    padding: 12px 14px;
+    border-left: 3px solid var(--landranger);
+    background: var(--card);
+    border-radius: 0 6px 6px 0;
+    font-size: 0.85rem;
+  }
+</style>
