@@ -14,16 +14,15 @@ export const SITE = {
 } as const;
 
 /**
- * Page theme, chosen at build time via the SITE_THEME env var ('light' | 'dark').
- * Both palettes live in src/styles/global.css; this only picks which one the
- * <html> element asks for. Exists so the two can be deployed side by side for
- * comparison — once one is chosen, this can collapse to a constant.
+ * Page theme. Dark is the chosen look; the light palette is kept in
+ * src/styles/global.css and can be built with SITE_THEME=light if it is ever
+ * wanted back.
  */
 export const THEME: 'light' | 'dark' =
-  import.meta.env.SITE_THEME === 'dark' ? 'dark' : 'light';
+  import.meta.env.SITE_THEME === 'light' ? 'light' : 'dark';
 
 /** Browser chrome colour — matches the header band in each theme. */
-export const THEME_COLOR = THEME === 'dark' ? '#171F24' : '#28343B';
+export const THEME_COLOR = THEME === 'dark' ? '#141B20' : '#28343B';
 
 /**
  * TODO(Toby): confirm the address to publish. This is the only contact point on

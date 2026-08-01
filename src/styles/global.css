@@ -79,26 +79,37 @@
    ratios for every pairing below were measured, not eyeballed.
    -------------------------------------------------------------------------- */
 [data-theme='dark'] {
-  --paper: #202a30;
+  /* Page sits deeper and cards sit higher than the first pass, so a card
+     reads as a distinct raised surface: 1.46:1 against the page, up from
+     1.15:1 where the edge was barely there. */
+  --paper: #1c262c;
+  --card: #33414a;
   --ink: #e9e7df;
-  --card: #28343b;
-  --line: #38454d;
-  --muted: #9baab2;
+  --line: #4a5a65;
+  --muted: #a8b6bd;
 
-  --landranger: #e86ba4;
-  --live: #35b173;
-  --gorse: #e0ab3c;
+  /* Lifting the card costs contrast for everything printed on it, so the
+     accents are lifted to match. All of these clear 4.5:1 on the card as
+     well as on the page — the kickers and mono labels are small text, so
+     the card is the binding constraint, not the page. */
+  --landranger: #f28dbb;
+  --live: #45c283;
+  --gorse: #e8b950;
 
-  --header-bg: #171f24;
-  --nav-bg: #171f24;
+  --header-bg: #141b20;
+  --nav-bg: #141b20;
   --header-dim: #8fa2ab;
   --on-dark: #e9e7df;
-  --pill-bg: #101619;
+  --pill-bg: #0e1417;
   --pill-fg: #e9e7df;
   --badge-fg: #171f24;
-  --map-bg: #1a2429;
-  --code-bg: #1a2429;
-  --input-bg: #1a2429;
+
+  /* Sunken surfaces — inputs, code, the map well — go below the page rather
+     than above it, so they read as recessed against a raised card. */
+  --map-bg: #161e23;
+  --code-bg: #161e23;
+  --input-bg: #161e23;
+
   --ridge-line: #cfd6d1;
   --ridge-ghost: #46545d;
 }
