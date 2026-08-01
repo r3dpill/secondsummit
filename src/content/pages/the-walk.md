@@ -8,9 +8,6 @@ legacyUrl: '/the-walk/'
 
 St Bees, Cumbria · 174 miles across England · Robin Hood's Bay, Yorkshire
 
-_This was the plan, written before setting off in March 2026. The figures below are
-the intended route; the [walked totals are on the Coast to Coast page](/coast-to-coast/)._
-
 ## A walk across England
 
 The Coast to Coast is one of England's great long-distance footpaths, crossing the full

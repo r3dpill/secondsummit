@@ -35,7 +35,7 @@ export const FILMS = {
   latest: {
     id: null as string | null,
     kicker: 'Coast to Coast · 2026',
-    title: '172 miles across England: the full story',
+    title: '174 miles across England: the full story',
   },
   /** /coast-to-coast expedition film. */
   coastToCoast: {
@@ -61,7 +61,7 @@ export const NAV = [
 
 /** Coast to Coast headline figures (brief §Site structure). */
 export const C2C_STATS = [
-  { n: '172', l: 'Miles' },
+  { n: '174', l: 'Miles' },
   { n: '23,180', l: 'Ft ascent' },
   { n: '16', l: 'Days' },
   { n: '4', l: 'Wild camps' },
