@@ -122,15 +122,30 @@ node scripts/mock-github.mjs 8787 /tmp/mock-commit
 
 ## Deployment
 
-Cloudflare Pages builds on every push to `main`.
+Every push to `main` runs `.github/workflows/deploy.yml`, which typechecks,
+builds, and uploads to the Cloudflare Pages project **`secondsummit`**. Takes
+about 50 seconds. Nothing needs doing by hand — that is what makes a post filed
+from the hill appear on the site by itself.
 
-- **Build command:** `npm run build`
-- **Output directory:** `dist`
-- **Node version:** 22 (set `NODE_VERSION=22.23.1`)
+Deploys are serialised, so two posts filed a minute apart cannot race; the
+second waits and the newer build wins.
+
+Progress and logs: **Actions** tab on GitHub. Deployment history and the
+rollback button: Cloudflare dashboard → Workers & Pages → `secondsummit`.
+
+**Repository secrets** (GitHub → Settings → Secrets → Actions) — these let the
+workflow deploy:
+
+| Name | What it is |
+| --- | --- |
+| `CLOUDFLARE_API_TOKEN` | Scoped token: Pages Edit + DNS Edit on this zone |
+| `CLOUDFLARE_ACCOUNT_ID` | `3a46e840dc20018b68d56d4b46b03a23` |
 
 ### Required environment variables
 
-Set these on the Pages project (the first three as **encrypted secrets**):
+Set these on the Pages project itself, not in GitHub (the first three as
+**encrypted secrets**). They are what `/post` uses at runtime, and they are
+already configured:
 
 | Name | What it is |
 | --- | --- |
@@ -141,16 +156,24 @@ Set these on the Pages project (the first three as **encrypted secrets**):
 | `GITHUB_BRANCH` | `main` |
 
 Without these, `/post` returns "Posting is not configured on this deployment"
-and the rest of the site is unaffected.
+and the rest of the site is unaffected. Changing `SESSION_SECRET` signs every
+device out; the current value is kept in `~/.secrets/secondsummit-session-secret`
+on Toby's machine.
 
 ### Going live
 
-The domain currently points at Namecheap shared hosting. Switching it over:
+The site is live at **https://secondsummit.pages.dev**. The real domain still
+points at the old Namecheap hosting and has not been touched.
 
-1. Confirm the `*.pages.dev` preview looks right.
-2. In Cloudflare DNS for `secondsummit.uk`, **remove the A record to
-   `185.61.152.19`**.
-3. Attach `secondsummit.uk` to the Pages project as a custom domain.
+To switch it over, once the preview has been approved:
+
+1. In Cloudflare DNS for `secondsummit.uk`, **remove the A record to
+   `185.61.152.19`** (and the `www` CNAME follows it).
+2. Attach `secondsummit.uk` to the `secondsummit` Pages project as a custom
+   domain — Cloudflare writes the new DNS record itself.
+3. **Leave the MX and SPF records alone.** Email forwarding for the domain runs
+   through `registrar-servers.com` and is unrelated to hosting; removing them
+   would silently break mail.
 4. Leave `wisecoasttocoast.com` alone. Retiring it — 301s from the old post URLs
    onto `/posts/...` — is a separate job before the domain lapses. Every
    imported post keeps its old path in `legacyUrl` frontmatter to build that
