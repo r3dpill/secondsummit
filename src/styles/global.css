@@ -23,6 +23,30 @@
   --font-display: 'Bricolage Grotesque Variable', 'Bricolage Grotesque', system-ui, sans-serif;
   --font-body: 'Public Sans Variable', 'Public Sans', system-ui, sans-serif;
   --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* --- type scale -------------------------------------------------------
+     The prototype's scale ran tight (16px/1.55 body, 32px h1). The old site
+     was more generous — 16px/1.75 with 42px headings — and reads warmer for
+     it. This sits closer to the old site while keeping the prototype's
+     typefaces. Every size below derives from these, so the whole scale can
+     be moved from one place. */
+  --text-base: 1.0625rem; /* 17px */
+  --leading-base: 1.7;
+  --leading-prose: 1.75;
+
+  --text-h1: 2.35rem;
+  --text-h1-sub: 1.9rem;
+  --text-h2: 1.55rem;
+  --text-h3: 1.12rem;
+  --text-small: 0.9rem;
+  --text-lede: 1.12rem;
+
+  /* Mono labels are a signature element, but tight tracking is most of what
+     reads as clinical. Eased off a little. */
+  --track-eyebrow: 0.11em;
+  --text-eyebrow: 0.74rem;
+
+  --space-para: 16px;
 }
 
 *,
@@ -48,8 +72,8 @@ body {
   font-family: var(--font-body);
   background: var(--paper);
   color: var(--ink);
-  font-size: 16px;
-  line-height: 1.55;
+  font-size: var(--text-base);
+  line-height: var(--leading-base);
   padding-bottom: calc(var(--nav-h) + env(safe-area-inset-bottom));
   -webkit-font-smoothing: antialiased;
 }
@@ -131,7 +155,7 @@ h3,
 }
 
 section {
-  padding: 24px 20px;
+  padding: 30px 20px;
   border-bottom: 1px solid var(--line);
 }
 
@@ -141,39 +165,39 @@ section.flush {
 
 .eyebrow {
   font-family: var(--font-mono);
-  font-size: 0.7rem;
-  letter-spacing: 0.14em;
+  font-size: var(--text-eyebrow);
+  letter-spacing: var(--track-eyebrow);
   text-transform: uppercase;
   color: var(--landranger);
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 
 h1 {
-  font-size: 2rem;
+  font-size: var(--text-h1);
   font-weight: 750;
-  line-height: 1.08;
-  letter-spacing: -0.01em;
+  line-height: 1.12;
+  letter-spacing: -0.015em;
 }
 
 h1.sub {
-  font-size: 1.6rem;
+  font-size: var(--text-h1-sub);
 }
 
 h2 {
-  font-size: 1.35rem;
+  font-size: var(--text-h2);
   font-weight: 700;
-  line-height: 1.15;
-  margin-bottom: 12px;
+  line-height: 1.2;
+  margin-bottom: 14px;
 }
 
 h3 {
-  font-size: 1rem;
+  font-size: var(--text-h3);
   font-weight: 650;
-  margin-bottom: 6px;
+  margin-bottom: 7px;
 }
 
 p {
-  margin-bottom: 12px;
+  margin-bottom: var(--space-para);
 }
 
 p:last-child {
@@ -181,12 +205,14 @@ p:last-child {
 }
 
 .small {
-  font-size: 0.85rem;
+  font-size: var(--text-small);
   color: var(--muted);
 }
 
 .lede {
-  margin-top: 12px;
+  margin-top: 14px;
+  font-size: var(--text-lede);
+  line-height: var(--leading-prose);
 }
 
 a {
@@ -207,11 +233,12 @@ a:focus-visible {
 
 blockquote {
   border-left: 3px solid var(--landranger);
-  padding: 2px 0 2px 14px;
-  font-size: 1.02rem;
+  padding: 4px 0 4px 18px;
+  font-size: 1.2rem;
+  line-height: 1.5;
   font-style: italic;
   color: var(--slate);
-  margin: 16px 0;
+  margin: 22px 0;
 }
 
 hr {
@@ -328,9 +355,9 @@ hr {
   display: flex;
   justify-content: space-between;
   gap: 10px;
-  padding: 7px 0;
+  padding: 10px 0;
   border-bottom: 1px dashed var(--line);
-  font-size: 0.9rem;
+  font-size: 0.97rem;
 }
 
 .cond .row:last-of-type {
@@ -412,7 +439,7 @@ hr {
 }
 
 .vlog .meta .t {
-  font-size: 0.85rem;
+  font-size: 0.93rem;
   font-weight: 600;
   line-height: 1.25;
   margin-top: 3px;
@@ -456,13 +483,13 @@ hr {
 .stat .n {
   font-family: var(--font-display);
   font-weight: 750;
-  font-size: 1.4rem;
+  font-size: 1.65rem;
   line-height: 1;
 }
 
 .stat .l {
   font-family: var(--font-mono);
-  font-size: 0.6rem;
+  font-size: 0.63rem;
   letter-spacing: 0.08em;
   color: var(--muted);
   text-transform: uppercase;
@@ -477,9 +504,9 @@ hr {
 .daylist li {
   display: flex;
   gap: 12px;
-  padding: 10px 0;
+  padding: 13px 0;
   border-bottom: 1px dashed var(--line);
-  font-size: 0.9rem;
+  font-size: 0.98rem;
   align-items: baseline;
 }
 
@@ -489,7 +516,7 @@ hr {
 
 .daylist .dn {
   font-family: var(--font-mono);
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   color: var(--landranger);
   flex: 0 0 44px;
 }
@@ -505,7 +532,7 @@ hr {
 
 .daylist .mi {
   font-family: var(--font-mono);
-  font-size: 0.72rem;
+  font-size: 0.78rem;
   color: var(--muted);
   flex: 0 0 auto;
 }
@@ -534,24 +561,29 @@ hr {
 }
 
 .rulecard p {
-  margin: 4px 0 0;
-  font-size: 0.9rem;
+  margin: 6px 0 0;
+  font-size: 0.97rem;
+  line-height: 1.6;
 }
 
 /* ---------- prose (imported markdown bodies) ---------- */
+.prose {
+  line-height: var(--leading-prose);
+}
+
 .prose > * + * {
-  margin-top: 12px;
+  margin-top: var(--space-para);
 }
 
 .prose h2 {
-  font-size: 1.2rem;
-  margin-top: 24px;
+  font-size: var(--text-h2);
+  margin-top: 32px;
   margin-bottom: 0;
 }
 
 .prose h3 {
-  font-size: 1rem;
-  margin-top: 20px;
+  font-size: var(--text-h3);
+  margin-top: 26px;
   margin-bottom: 0;
 }
 
@@ -657,22 +689,23 @@ hr {
 
 .postcard .kicker {
   font-family: var(--font-mono);
-  font-size: 0.62rem;
-  letter-spacing: 0.1em;
+  font-size: 0.66rem;
+  letter-spacing: 0.09em;
   color: var(--landranger);
   text-transform: uppercase;
 }
 
 .postcard h3 {
-  font-size: 1.05rem;
-  margin: 4px 0 0;
-  line-height: 1.2;
+  font-size: 1.22rem;
+  margin: 5px 0 0;
+  line-height: 1.25;
 }
 
 .postcard p {
-  font-size: 0.88rem;
+  font-size: 0.95rem;
   color: var(--muted);
-  margin: 6px 0 0;
+  margin: 7px 0 0;
+  line-height: 1.6;
 }
 
 .postcard .cover {
@@ -688,7 +721,7 @@ hr {
 /* ---------- post meta ---------- */
 .postmeta {
   font-family: var(--font-mono);
-  font-size: 0.68rem;
+  font-size: 0.72rem;
   letter-spacing: 0.06em;
   color: var(--muted);
   text-transform: uppercase;
@@ -814,7 +847,11 @@ hr {
   }
 
   h1 {
-    font-size: 2.4rem;
+    font-size: 2.9rem;
+  }
+
+  h1.sub {
+    font-size: 2.2rem;
   }
 
   .site-nav {
