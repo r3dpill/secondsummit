@@ -14,6 +14,17 @@ export const SITE = {
 } as const;
 
 /**
+ * Page theme. Dark is the chosen look; the light palette is kept in
+ * src/styles/global.css and can be built with SITE_THEME=light if it is ever
+ * wanted back.
+ */
+export const THEME: 'light' | 'dark' =
+  import.meta.env.SITE_THEME === 'light' ? 'light' : 'dark';
+
+/** Browser chrome colour — matches the header band in each theme. */
+export const THEME_COLOR = THEME === 'dark' ? '#141B20' : '#28343B';
+
+/**
  * TODO(Toby): confirm the address to publish. This is the only contact point on
  * the site (brief: "a one-line contact mention"). Left as the address on file
  * until you say otherwise — change it here and it updates everywhere.

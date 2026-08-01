@@ -5,7 +5,7 @@ import '@fontsource/ibm-plex-mono/latin-400.css';
 import '@fontsource/ibm-plex-mono/latin-500.css';
 import '../styles/global.css';
 
-import { SITE, NAV } from '../site';
+import { SITE, NAV, THEME, THEME_COLOR } from '../site';
 
 interface Props {
   title?: string;
@@ -40,7 +40,7 @@ const isCurrent = (href: string) => {
 ---
 
 <!doctype html>
-<html lang="en-GB">
+<html lang="en-GB" data-theme={THEME}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
@@ -58,7 +58,7 @@ const isCurrent = (href: string) => {
     <meta property="og:locale" content={SITE.locale} />
     <meta name="twitter:card" content="summary_large_image" />
 
-    <meta name="theme-color" content="#28343B" />
+    <meta name="theme-color" content={THEME_COLOR} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/site.webmanifest" />

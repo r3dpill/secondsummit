@@ -14,8 +14,23 @@
   --live: #1e8f54;
   --muted: #5c6a72;
 
-  --card: #fff;
+  /* Raised surfaces. NOT pure white: a cold white card on a cream page reads
+     as a different material stuck on top. This is the same warmth as the
+     paper, a whisper lighter, so cards look like paper rather than plastic. */
+  --card: #fdfcf7;
+
+  --header-bg: var(--slate);
+  --nav-bg: var(--ink);
   --header-dim: #9fb0b8;
+  --on-dark: var(--paper);      /* text on slate/ink surfaces */
+  --pill-bg: var(--ink);
+  --pill-fg: var(--paper);
+  --badge-fg: #fff;
+  --map-bg: #e9edea;
+  --code-bg: #ecebe4;
+  --input-bg: #fff;
+  --ridge-line: #28343b;
+  --ridge-ghost: #dad7cc;
 
   --measure: 680px;
   --nav-h: 64px;
@@ -23,6 +38,80 @@
   --font-display: 'Bricolage Grotesque Variable', 'Bricolage Grotesque', system-ui, sans-serif;
   --font-body: 'Public Sans Variable', 'Public Sans', system-ui, sans-serif;
   --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* --- type scale -------------------------------------------------------
+     The prototype's scale ran tight (16px/1.55 body, 32px h1). The old site
+     was more generous — 16px/1.75 with 42px headings — and reads warmer for
+     it. This sits closer to the old site while keeping the prototype's
+     typefaces. Every size below derives from these, so the whole scale can
+     be moved from one place. */
+  --text-base: 1.0625rem; /* 17px */
+  --leading-base: 1.7;
+  --leading-prose: 1.75;
+
+  /* The hero was set big and heavy and read as a slogan rather than a
+     statement of fact. The brief asks for unshowy; a calmer weight and
+     near-neutral tracking carry more authority at this size than shouting. */
+  --text-h1: 2.05rem;
+  --text-h1-sub: 1.75rem;
+  --weight-h1: 640;
+  --text-h2: 1.55rem;
+  --text-h3: 1.12rem;
+  --text-small: 0.9rem;
+  --text-lede: 1.12rem;
+
+  /* Mono labels are a signature element, but tight tracking is most of what
+     reads as clinical. Eased off a little. */
+  --track-eyebrow: 0.11em;
+  --text-eyebrow: 0.74rem;
+
+  --space-para: 16px;
+}
+
+/* --------------------------------------------------------------------------
+   Dark variant — set <html data-theme="dark">.
+   Deliberately not black: the page is a deep Welsh slate and cards sit a
+   shade above it, so the card/page relationship is the same idea as the
+   light theme rather than a different design.
+
+   The Landranger magenta has to shift lighter here. #C2166B scores 2.5:1 on
+   this background — unreadable. #E86BA4 is the same hue at 4.9:1. Contrast
+   ratios for every pairing below were measured, not eyeballed.
+   -------------------------------------------------------------------------- */
+[data-theme='dark'] {
+  /* Page sits deeper and cards sit higher than the first pass, so a card
+     reads as a distinct raised surface: 1.46:1 against the page, up from
+     1.15:1 where the edge was barely there. */
+  --paper: #1c262c;
+  --card: #33414a;
+  --ink: #e9e7df;
+  --line: #4a5a65;
+  --muted: #a8b6bd;
+
+  /* Lifting the card costs contrast for everything printed on it, so the
+     accents are lifted to match. All of these clear 4.5:1 on the card as
+     well as on the page — the kickers and mono labels are small text, so
+     the card is the binding constraint, not the page. */
+  --landranger: #f28dbb;
+  --live: #45c283;
+  --gorse: #e8b950;
+
+  --header-bg: #141b20;
+  --nav-bg: #141b20;
+  --header-dim: #8fa2ab;
+  --on-dark: #e9e7df;
+  --pill-bg: #0e1417;
+  --pill-fg: #e9e7df;
+  --badge-fg: #171f24;
+
+  /* Sunken surfaces — inputs, code, the map well — go below the page rather
+     than above it, so they read as recessed against a raised card. */
+  --map-bg: #161e23;
+  --code-bg: #161e23;
+  --input-bg: #161e23;
+
+  --ridge-line: #cfd6d1;
+  --ridge-ghost: #46545d;
 }
 
 *,
@@ -48,8 +137,8 @@ body {
   font-family: var(--font-body);
   background: var(--paper);
   color: var(--ink);
-  font-size: 16px;
-  line-height: 1.55;
+  font-size: var(--text-base);
+  line-height: var(--leading-base);
   padding-bottom: calc(var(--nav-h) + env(safe-area-inset-bottom));
   -webkit-font-smoothing: antialiased;
 }
@@ -91,8 +180,8 @@ h3,
 
 /* ---------- top band ---------- */
 .site-header {
-  background: var(--slate);
-  color: var(--paper);
+  background: var(--header-bg);
+  color: var(--on-dark);
   padding: 14px 20px 12px;
   position: sticky;
   top: 0;
@@ -108,7 +197,7 @@ h3,
   font-weight: 700;
   font-size: 1.05rem;
   letter-spacing: 0.01em;
-  color: var(--paper);
+  color: var(--on-dark);
   text-decoration: none;
 }
 
@@ -131,7 +220,7 @@ h3,
 }
 
 section {
-  padding: 24px 20px;
+  padding: 30px 20px;
   border-bottom: 1px solid var(--line);
 }
 
@@ -141,39 +230,39 @@ section.flush {
 
 .eyebrow {
   font-family: var(--font-mono);
-  font-size: 0.7rem;
-  letter-spacing: 0.14em;
+  font-size: var(--text-eyebrow);
+  letter-spacing: var(--track-eyebrow);
   text-transform: uppercase;
   color: var(--landranger);
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 
 h1 {
-  font-size: 2rem;
-  font-weight: 750;
-  line-height: 1.08;
-  letter-spacing: -0.01em;
+  font-size: var(--text-h1);
+  font-weight: var(--weight-h1);
+  line-height: 1.22;
+  letter-spacing: -0.004em;
 }
 
 h1.sub {
-  font-size: 1.6rem;
+  font-size: var(--text-h1-sub);
 }
 
 h2 {
-  font-size: 1.35rem;
+  font-size: var(--text-h2);
   font-weight: 700;
-  line-height: 1.15;
-  margin-bottom: 12px;
+  line-height: 1.2;
+  margin-bottom: 14px;
 }
 
 h3 {
-  font-size: 1rem;
+  font-size: var(--text-h3);
   font-weight: 650;
-  margin-bottom: 6px;
+  margin-bottom: 7px;
 }
 
 p {
-  margin-bottom: 12px;
+  margin-bottom: var(--space-para);
 }
 
 p:last-child {
@@ -181,12 +270,14 @@ p:last-child {
 }
 
 .small {
-  font-size: 0.85rem;
+  font-size: var(--text-small);
   color: var(--muted);
 }
 
 .lede {
-  margin-top: 12px;
+  margin-top: 14px;
+  font-size: var(--text-lede);
+  line-height: var(--leading-prose);
 }
 
 a {
@@ -207,11 +298,12 @@ a:focus-visible {
 
 blockquote {
   border-left: 3px solid var(--landranger);
-  padding: 2px 0 2px 14px;
-  font-size: 1.02rem;
+  padding: 4px 0 4px 18px;
+  font-size: 1.2rem;
+  line-height: 1.5;
   font-style: italic;
   color: var(--slate);
-  margin: 16px 0;
+  margin: 22px 0;
 }
 
 hr {
@@ -260,8 +352,8 @@ hr {
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  background: var(--ink);
-  color: var(--paper);
+  background: var(--pill-bg);
+  color: var(--pill-fg);
   border-radius: 999px;
   padding: 6px 14px 6px 10px;
   font-family: var(--font-mono);
@@ -299,7 +391,7 @@ hr {
   border: 1px solid var(--line);
   border-radius: 6px;
   overflow: hidden;
-  background: #e9edea;
+  background: var(--map-bg);
 }
 
 .map-frame iframe {
@@ -328,9 +420,9 @@ hr {
   display: flex;
   justify-content: space-between;
   gap: 10px;
-  padding: 7px 0;
+  padding: 10px 0;
   border-bottom: 1px dashed var(--line);
-  font-size: 0.9rem;
+  font-size: 0.97rem;
 }
 
 .cond .row:last-of-type {
@@ -352,7 +444,7 @@ hr {
   font-family: var(--font-mono);
   font-size: 0.62rem;
   letter-spacing: 0.1em;
-  color: #fff;
+  color: var(--badge-fg);
   background: var(--gorse);
   border-radius: 3px;
   padding: 2px 7px;
@@ -412,7 +504,7 @@ hr {
 }
 
 .vlog .meta .t {
-  font-size: 0.85rem;
+  font-size: 0.93rem;
   font-weight: 600;
   line-height: 1.25;
   margin-top: 3px;
@@ -456,13 +548,13 @@ hr {
 .stat .n {
   font-family: var(--font-display);
   font-weight: 750;
-  font-size: 1.4rem;
+  font-size: 1.65rem;
   line-height: 1;
 }
 
 .stat .l {
   font-family: var(--font-mono);
-  font-size: 0.6rem;
+  font-size: 0.63rem;
   letter-spacing: 0.08em;
   color: var(--muted);
   text-transform: uppercase;
@@ -477,9 +569,9 @@ hr {
 .daylist li {
   display: flex;
   gap: 12px;
-  padding: 10px 0;
+  padding: 13px 0;
   border-bottom: 1px dashed var(--line);
-  font-size: 0.9rem;
+  font-size: 0.98rem;
   align-items: baseline;
 }
 
@@ -489,7 +581,7 @@ hr {
 
 .daylist .dn {
   font-family: var(--font-mono);
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   color: var(--landranger);
   flex: 0 0 44px;
 }
@@ -505,7 +597,7 @@ hr {
 
 .daylist .mi {
   font-family: var(--font-mono);
-  font-size: 0.72rem;
+  font-size: 0.78rem;
   color: var(--muted);
   flex: 0 0 auto;
 }
@@ -534,24 +626,29 @@ hr {
 }
 
 .rulecard p {
-  margin: 4px 0 0;
-  font-size: 0.9rem;
+  margin: 6px 0 0;
+  font-size: 0.97rem;
+  line-height: 1.6;
 }
 
 /* ---------- prose (imported markdown bodies) ---------- */
+.prose {
+  line-height: var(--leading-prose);
+}
+
 .prose > * + * {
-  margin-top: 12px;
+  margin-top: var(--space-para);
 }
 
 .prose h2 {
-  font-size: 1.2rem;
-  margin-top: 24px;
+  font-size: var(--text-h2);
+  margin-top: 32px;
   margin-bottom: 0;
 }
 
 .prose h3 {
-  font-size: 1rem;
-  margin-top: 20px;
+  font-size: var(--text-h3);
+  margin-top: 26px;
   margin-bottom: 0;
 }
 
@@ -611,14 +708,14 @@ hr {
 .prose code {
   font-family: var(--font-mono);
   font-size: 0.86em;
-  background: #ecebe4;
+  background: var(--code-bg);
   padding: 1px 5px;
   border-radius: 3px;
 }
 
 .prose pre {
   background: var(--slate);
-  color: var(--paper);
+  color: var(--on-dark);
   padding: 14px;
   border-radius: 6px;
   overflow-x: auto;
@@ -657,22 +754,23 @@ hr {
 
 .postcard .kicker {
   font-family: var(--font-mono);
-  font-size: 0.62rem;
-  letter-spacing: 0.1em;
+  font-size: 0.66rem;
+  letter-spacing: 0.09em;
   color: var(--landranger);
   text-transform: uppercase;
 }
 
 .postcard h3 {
-  font-size: 1.05rem;
-  margin: 4px 0 0;
-  line-height: 1.2;
+  font-size: 1.22rem;
+  margin: 5px 0 0;
+  line-height: 1.25;
 }
 
 .postcard p {
-  font-size: 0.88rem;
+  font-size: 0.95rem;
   color: var(--muted);
-  margin: 6px 0 0;
+  margin: 7px 0 0;
+  line-height: 1.6;
 }
 
 .postcard .cover {
@@ -688,7 +786,7 @@ hr {
 /* ---------- post meta ---------- */
 .postmeta {
   font-family: var(--font-mono);
-  font-size: 0.68rem;
+  font-size: 0.72rem;
   letter-spacing: 0.06em;
   color: var(--muted);
   text-transform: uppercase;
@@ -724,7 +822,7 @@ hr {
   left: 0;
   right: 0;
   z-index: 30;
-  background: var(--ink);
+  background: var(--nav-bg);
   display: flex;
   padding-bottom: env(safe-area-inset-bottom);
 }
@@ -750,7 +848,7 @@ hr {
 }
 
 .site-nav a[aria-current='page'] {
-  color: var(--paper);
+  color: var(--on-dark);
 }
 
 .site-nav a[aria-current='page'] .ic {
@@ -760,7 +858,7 @@ hr {
 .site-nav a:hover,
 .site-nav a:focus-visible {
   text-decoration: none;
-  color: var(--paper);
+  color: var(--on-dark);
 }
 
 /* ---------- footer ---------- */
@@ -794,7 +892,7 @@ hr {
   border: 1px dashed var(--landranger);
   border-radius: 6px;
   padding: 12px 14px;
-  background: #fff;
+  background: var(--card);
 }
 
 .placeholder::before {
@@ -814,12 +912,16 @@ hr {
   }
 
   h1 {
-    font-size: 2.4rem;
+    font-size: 2.45rem;
+  }
+
+  h1.sub {
+    font-size: 2rem;
   }
 
   .site-nav {
     position: static;
-    background: var(--slate);
+    background: var(--header-bg);
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     padding-bottom: 0;
   }

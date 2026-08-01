@@ -4,10 +4,19 @@
   "description": "Long walks, done properly, filmed honestly.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#F7F6F1",
-  "theme_color": "#28343B",
+  "background_color": "#1C262C",
+  "theme_color": "#141B20",
   "icons": [
-    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
-    { "src": "/apple-touch-icon.png", "sizes": "180x180", "type": "image/png" }
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
   ]
 }
