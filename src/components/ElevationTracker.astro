@@ -45,7 +45,7 @@ const hasRoute = data.route.length > 1;
           .map(([, info]) => (
             <span
               class="t-legend-item"
-              style={`background:${info.color}22;color:${info.color};border:1px solid ${info.color}44`}
+              style={`background:var(--chart-bg);color:${info.color};border:1px solid ${info.color}66`}
             >
               {info.icon} {info.label}
             </span>
@@ -210,6 +210,9 @@ const hasRoute = data.route.length > 1;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     position: relative;
+    background: var(--chart-bg);
+    border-radius: 6px;
+    border: 1px solid var(--line);
   }
 
   .t-chart-wrap svg {
@@ -298,10 +301,12 @@ const hasRoute = data.route.length > 1;
     const statusEl = root.querySelector<HTMLElement>('[data-status]')!;
 
     const colours = {
-      grid: token(root, '--line', '#4a5a65'),
-      axis: token(root, '--muted', '#a8b6bd'),
-      ink: token(root, '--ink', '#e9e7df'),
-      card: token(root, '--card', '#33414a'),
+      grid: token(root, '--chart-grid', '#232c33'),
+      axis: token(root, '--chart-axis', '#7f8e97'),
+      ink: token(root, '--chart-ink', '#e6edf3'),
+      // Everything drawn *on* the plot keys off the plot's own background, so
+      // dot outlines and label backdrops sit on it cleanly.
+      card: token(root, '--chart-bg', '#0f161a'),
       accent: token(root, '--landranger', '#f28dbb'),
       sea: '#58A6FF',
     };

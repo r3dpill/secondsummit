@@ -13,6 +13,12 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+  # /snowdonia-way flips from its teaser state to live mode on the expedition
+  # start date, and that date is read at build time. A static site does not
+  # notice a date passing, so rebuild once a day — otherwise the page would
+  # sit in teaser mode until someone happened to push.
+  schedule:
+    - cron: '17 5 * * *'
 
 concurrency:
   group: deploy-production

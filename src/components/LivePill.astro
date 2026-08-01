@@ -1,10 +1,24 @@
 ---
 interface Props {
-  /** Pill text, e.g. "TRACKING" or "NEXT LIVE · SNOWDONIA WAY · OCT 2026". */
+  /** Pill text, e.g. "TRACKING" or "GOES LIVE · OCT 2026". */
   label: string;
+  /**
+   * Whether the dot pulses. Off before an expedition starts — a pulsing dot
+   * says "happening now", and it isn't yet.
+   */
+  pulse?: boolean;
 }
 
-const { label } = Astro.props;
+const { label, pulse = true } = Astro.props;
 ---
 
-<span class="live-pill"><span class="dot" aria-hidden="true"></span>{label}</span>
+<span class="live-pill">
+  <span class="dot" class:list={[!pulse && 'still']} aria-hidden="true"></span>{label}
+</span>
+
+<style>
+  .dot.still {
+    animation: none;
+    background: var(--muted);
+  }
+</style>

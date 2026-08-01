@@ -4,125 +4,236 @@ import LivePill from '../../components/LivePill.astro';
 import ConditionsCard from '../../components/ConditionsCard.astro';
 import VideoEmbed from '../../components/VideoEmbed.astro';
 import PostCard from '../../components/PostCard.astro';
+import Stats from '../../components/Stats.astro';
+import PhotoBand from '../../components/PhotoBand.astro';
 import ElevationTracker from '../../components/ElevationTracker.astro';
 import { getPostsByCategory, inWalkOrder, postUrl } from '../../lib/posts';
 import { MAPSHARE_URL, SNOWDONIA, YOUTUBE_CHANNEL } from '../../site';
 import { SNOWDONIA_WAY } from '../../data/routes';
+import { MODE, TEASER, SNOWDONIA_FACTS, STAGES, HISTORY, PHOTO_SLOTS, FOLLOW } from '../../data/snowdonia';
 
+/**
+ * One URL, two states. `MODE` comes from src/data/snowdonia.ts — the date by
+ * default, overridable with SITE_SNOWDONIA_MODE. A link shared today is the
+ * same link that goes live in October.
+ */
 const posts = await getPostsByCategory('snowdonia-way');
-
-// The conditions card reads the most recent post that carries any conditions
-// frontmatter, so filing the morning diary entry updates it with no second
-// workflow. Falls back to nothing at all before the walk starts.
 const latestWithConditions = posts.find((p) => p.data.conditions);
-
-// Newest film first along the strip.
 const films = [...posts].filter((p) => p.data.video).reverse();
 const dayIndex = inWalkOrder(posts);
+const hasRoute = SNOWDONIA_WAY.route.length > 1;
+
+const description =
+  MODE === 'teaser'
+    ? `${TEASER.standfirst} Live tracking, a daily film and the morning's conditions, from October 2026.`
+    : `Live from the Snowdonia Way, October 2026. ${SNOWDONIA.strapline}`;
 ---
 
-<Base
-  title="Snowdonia Way"
-  description={`Live from the Snowdonia Way, October 2026. ${SNOWDONIA.strapline}`}
-  gridref="SH 647 556 · ERYRI"
->
+<Base title="Snowdonia Way" description={description} gridref="SH 647 556 · ERYRI">
+  {/* ---------------------------------------------------------- hero */}
   <section style="padding-bottom:16px">
-    <div class="eyebrow">Live expedition · Leg 1</div>
-    <h1 class="sub">Snowdon, Everest &amp; Crib Goch</h1>
-    <p class="small" style="margin-top:8px">{SNOWDONIA.strapline}</p>
-  </section>
-
-  {
-    SNOWDONIA_WAY.route.length > 1 && (
-      <section class="bleed">
-        <ElevationTracker data={SNOWDONIA_WAY} />
-      </section>
-    )
-  }
-
-  <section>
-    <h2>Where is he now <LivePill label="TRACKING" /></h2>
-    <div class="map-frame">
-      <iframe src={MAPSHARE_URL} title="Live Garmin MapShare tracking" loading="lazy"></iframe>
-    </div>
-    <p class="map-note">
-      Position updates every 10 minutes from the inReach. When the tracker pauses overnight, so has
-      he — probably somewhere with a fire.
-    </p>
-  </section>
-
-  {
-    latestWithConditions && (
-      <section>
-        <h2>Today's conditions</h2>
-        <ConditionsCard
-          conditions={latestWithConditions.data.conditions}
-          updated={latestWithConditions.data.pubDate}
-        />
-        <p class="small" style="padding-top:8px">
-          Compiled each morning from the Met Office mountain forecast and MWIS Eryri. The question
-          that matters: what will he be facing today?
-        </p>
-      </section>
-    )
-  }
-
-  {
-    films.length > 0 && (
-      <section>
-        <h2>Daily films</h2>
-        <div class="vlog-strip">
-          {films.map((post) => (
-            <div class="vlog">
-              <VideoEmbed
-                id={post.data.video}
-                kicker={post.data.day != null ? `Day ${post.data.day}` : undefined}
-                title={post.data.title}
-              />
-            </div>
-          ))}
-        </div>
-        <p class="small">
-          Filmed on the hill, uploaded each evening. No support vehicle, no satellite uplink — just
-          what fits in the pack. <a href={YOUTUBE_CHANNEL}>The channel →</a>
-        </p>
-      </section>
-    )
-  }
-
-  <section>
-    <h2>Field notes</h2>
+    <div class="eyebrow">{MODE === 'teaser' ? TEASER.eyebrow : 'Live expedition · Leg 1'}</div>
+    <h1 class="sub">{MODE === 'teaser' ? TEASER.title : 'Snowdon, Everest & Crib Goch'}</h1>
     {
-      posts.length > 0 ? (
+      MODE === 'teaser' ? (
         <>
-          <ul class="postlist">
-            {posts.map((post, i) => (
-              <PostCard post={post} showCover={i === 0} />
-            ))}
-          </ul>
-          {dayIndex.length > 3 && (
-            <ul class="daylist" style="padding-top:16px">
-              {dayIndex.map((post) => (
-                <li>
-                  <span class="dn">{post.data.day != null ? `D${String(post.data.day).padStart(2, '0')}` : '—'}</span>
-                  <span class="stage">
-                    <a href={postUrl(post)}>{post.data.title}</a>
-                  </span>
-                  {post.data.distance && <span class="mi">{post.data.distance}</span>}
-                </li>
-              ))}
-            </ul>
-          )}
+          <div class="placeholder lede">
+            <p>{TEASER.standfirst}</p>
+          </div>
+          <p style="margin-top:14px">
+            <LivePill label={TEASER.pill} pulse={false} />
+          </p>
         </>
       ) : (
-        <div class="placeholder">
-          <p>
-            Nothing filed yet — the walk starts in October 2026. Daily entries will appear here as
-            they are posted from the hill, newest first, and the conditions card above will update
-            with them.
-          </p>
-        </div>
+        <p class="small" style="margin-top:8px">
+          {SNOWDONIA.strapline}
+        </p>
       )
     }
   </section>
+
+  {
+    MODE === 'teaser' ? (
+      <>
+        {/* ------------------------------------------------ facts */}
+        <section>
+          <Stats items={SNOWDONIA_FACTS} />
+        </section>
+
+        {/* ------------------------------------------------ route */}
+        <section>
+          <h2>The route</h2>
+          <ul class="daylist">
+            {STAGES.map((s) => (
+              <li>
+                <span class="dn">D{String(s.day).padStart(2, '0')}</span>
+                <span class="stage">
+                  {s.stage}
+                  <span class="character"> — {s.character}</span>
+                </span>
+                <span class="mi">{s.miles}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        {/* ------------------------------------------------ history */}
+        {HISTORY.map((block) => (
+          <section>
+            <div class="eyebrow">{block.eyebrow}</div>
+            <h2>{block.title}</h2>
+            <div class="placeholder">
+              {block.body.map((para) => (
+                <p>{para}</p>
+              ))}
+            </div>
+          </section>
+        ))}
+
+        {/* ------------------------------------------------ photos */}
+        <section>
+          <h2>The ground</h2>
+          <PhotoBand slots={PHOTO_SLOTS} />
+        </section>
+
+        {/* ------------------------------------------------ follow */}
+        <section>
+          <div class="eyebrow">{FOLLOW.eyebrow}</div>
+          <h2>{FOLLOW.title}</h2>
+          <ul class="follow">
+            {FOLLOW.points.map((point) => (
+              <li>{point}</li>
+            ))}
+          </ul>
+          <p class="small" style="padding-top:14px">
+            This page becomes the live one — same link, nothing to sign up for.{' '}
+            <a href="/rss.xml">Subscribe by RSS</a> if you'd rather be told.
+          </p>
+          <p class="small" style="padding-top:10px">
+            <a href="/coast-to-coast/">How the last one went →</a>
+          </p>
+        </section>
+      </>
+    ) : (
+      <>
+        {/* ------------------------------------------------ live */}
+        {hasRoute && (
+          <section class="bleed">
+            <ElevationTracker data={SNOWDONIA_WAY} />
+          </section>
+        )}
+
+        <section>
+          <h2>
+            Where is he now <LivePill label="TRACKING" />
+          </h2>
+          <div class="map-frame">
+            <iframe src={MAPSHARE_URL} title="Live Garmin MapShare tracking" loading="lazy" />
+          </div>
+          <p class="map-note">
+            Position updates every 10 minutes from the inReach. When the tracker pauses overnight, so
+            has he — probably somewhere with a fire.
+          </p>
+        </section>
+
+        {latestWithConditions && (
+          <section>
+            <h2>Today's conditions</h2>
+            <ConditionsCard
+              conditions={latestWithConditions.data.conditions}
+              updated={latestWithConditions.data.pubDate}
+            />
+            <p class="small" style="padding-top:8px">
+              Compiled each morning from the Met Office mountain forecast and MWIS Eryri. The
+              question that matters: what will he be facing today?
+            </p>
+          </section>
+        )}
+
+        {films.length > 0 && (
+          <section>
+            <h2>Daily films</h2>
+            <div class="vlog-strip">
+              {films.map((post) => (
+                <div class="vlog">
+                  <VideoEmbed
+                    id={post.data.video}
+                    kicker={post.data.day != null ? `Day ${post.data.day}` : undefined}
+                    title={post.data.title}
+                  />
+                </div>
+              ))}
+            </div>
+            <p class="small">
+              Filmed on the hill, uploaded each evening. No support vehicle, no satellite uplink —
+              just what fits in the pack. <a href={YOUTUBE_CHANNEL}>The channel →</a>
+            </p>
+          </section>
+        )}
+
+        <section>
+          <h2>Field notes</h2>
+          {posts.length > 0 ? (
+            <>
+              <ul class="postlist">
+                {posts.map((post, i) => (
+                  <PostCard post={post} showCover={i === 0} />
+                ))}
+              </ul>
+              {dayIndex.length > 3 && (
+                <ul class="daylist" style="padding-top:16px">
+                  {dayIndex.map((post) => (
+                    <li>
+                      <span class="dn">
+                        {post.data.day != null ? `D${String(post.data.day).padStart(2, '0')}` : '—'}
+                      </span>
+                      <span class="stage">
+                        <a href={postUrl(post)}>{post.data.title}</a>
+                      </span>
+                      {post.data.distance && <span class="mi">{post.data.distance}</span>}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </>
+          ) : (
+            <div class="placeholder">
+              <p>
+                Nothing filed yet. Daily entries appear here as they are posted from the hill,
+                newest first, and the conditions card above updates with them.
+              </p>
+            </div>
+          )}
+        </section>
+      </>
+    )
+  }
 </Base>
+
+<style>
+  .daylist .character {
+    color: var(--muted);
+  }
+
+  .follow {
+    list-style: none;
+    display: grid;
+    gap: 10px;
+  }
+
+  .follow li {
+    position: relative;
+    padding-left: 20px;
+    font-size: 0.97rem;
+    line-height: 1.6;
+  }
+
+  .follow li::before {
+    content: '▲';
+    position: absolute;
+    left: 0;
+    top: 0.1em;
+    font-size: 0.7rem;
+    color: var(--landranger);
+  }
+</style>

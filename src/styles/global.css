@@ -32,6 +32,15 @@
   --ridge-line: #28343b;
   --ridge-ghost: #dad7cc;
 
+  /* The elevation chart is drawn on its own near-black panel, not on a card.
+     Saturated route colours read vividly against near-black and go matte
+     against a mid grey — the original site put the chart on its darkest
+     surface, and that is what gave it its punch. */
+  --chart-bg: #141d22;
+  --chart-grid: #2b363d;
+  --chart-axis: #8b9aa3;
+  --chart-ink: #e6edf3;
+
   --measure: 680px;
   --nav-h: 64px;
 
@@ -112,6 +121,11 @@
 
   --ridge-line: #cfd6d1;
   --ridge-ghost: #46545d;
+
+  --chart-bg: #0f161a;
+  --chart-grid: #232c33;
+  --chart-axis: #7f8e97;
+  --chart-ink: #e6edf3;
 }
 
 *,
@@ -917,7 +931,7 @@ hr {
 }
 
 .placeholder::before {
-  content: 'PLACEHOLDER COPY';
+  content: '[TOBY] PLACEHOLDER COPY';
   display: block;
   font-family: var(--font-mono);
   font-size: 0.58rem;
