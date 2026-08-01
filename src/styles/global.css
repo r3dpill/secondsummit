@@ -14,8 +14,23 @@
   --live: #1e8f54;
   --muted: #5c6a72;
 
-  --card: #fff;
+  /* Raised surfaces. NOT pure white: a cold white card on a cream page reads
+     as a different material stuck on top. This is the same warmth as the
+     paper, a whisper lighter, so cards look like paper rather than plastic. */
+  --card: #fdfcf7;
+
+  --header-bg: var(--slate);
+  --nav-bg: var(--ink);
   --header-dim: #9fb0b8;
+  --on-dark: var(--paper);      /* text on slate/ink surfaces */
+  --pill-bg: var(--ink);
+  --pill-fg: var(--paper);
+  --badge-fg: #fff;
+  --map-bg: #e9edea;
+  --code-bg: #ecebe4;
+  --input-bg: #fff;
+  --ridge-line: #28343b;
+  --ridge-ghost: #dad7cc;
 
   --measure: 680px;
   --nav-h: 64px;
@@ -34,8 +49,12 @@
   --leading-base: 1.7;
   --leading-prose: 1.75;
 
-  --text-h1: 2.35rem;
-  --text-h1-sub: 1.9rem;
+  /* The hero was set big and heavy and read as a slogan rather than a
+     statement of fact. The brief asks for unshowy; a calmer weight and
+     near-neutral tracking carry more authority at this size than shouting. */
+  --text-h1: 2.05rem;
+  --text-h1-sub: 1.75rem;
+  --weight-h1: 640;
   --text-h2: 1.55rem;
   --text-h3: 1.12rem;
   --text-small: 0.9rem;
@@ -47,6 +66,41 @@
   --text-eyebrow: 0.74rem;
 
   --space-para: 16px;
+}
+
+/* --------------------------------------------------------------------------
+   Dark variant — set <html data-theme="dark">.
+   Deliberately not black: the page is a deep Welsh slate and cards sit a
+   shade above it, so the card/page relationship is the same idea as the
+   light theme rather than a different design.
+
+   The Landranger magenta has to shift lighter here. #C2166B scores 2.5:1 on
+   this background — unreadable. #E86BA4 is the same hue at 4.9:1. Contrast
+   ratios for every pairing below were measured, not eyeballed.
+   -------------------------------------------------------------------------- */
+[data-theme='dark'] {
+  --paper: #202a30;
+  --ink: #e9e7df;
+  --card: #28343b;
+  --line: #38454d;
+  --muted: #9baab2;
+
+  --landranger: #e86ba4;
+  --live: #35b173;
+  --gorse: #e0ab3c;
+
+  --header-bg: #171f24;
+  --nav-bg: #171f24;
+  --header-dim: #8fa2ab;
+  --on-dark: #e9e7df;
+  --pill-bg: #101619;
+  --pill-fg: #e9e7df;
+  --badge-fg: #171f24;
+  --map-bg: #1a2429;
+  --code-bg: #1a2429;
+  --input-bg: #1a2429;
+  --ridge-line: #cfd6d1;
+  --ridge-ghost: #46545d;
 }
 
 *,
@@ -115,8 +169,8 @@ h3,
 
 /* ---------- top band ---------- */
 .site-header {
-  background: var(--slate);
-  color: var(--paper);
+  background: var(--header-bg);
+  color: var(--on-dark);
   padding: 14px 20px 12px;
   position: sticky;
   top: 0;
@@ -132,7 +186,7 @@ h3,
   font-weight: 700;
   font-size: 1.05rem;
   letter-spacing: 0.01em;
-  color: var(--paper);
+  color: var(--on-dark);
   text-decoration: none;
 }
 
@@ -174,9 +228,9 @@ section.flush {
 
 h1 {
   font-size: var(--text-h1);
-  font-weight: 750;
-  line-height: 1.12;
-  letter-spacing: -0.015em;
+  font-weight: var(--weight-h1);
+  line-height: 1.22;
+  letter-spacing: -0.004em;
 }
 
 h1.sub {
@@ -287,8 +341,8 @@ hr {
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  background: var(--ink);
-  color: var(--paper);
+  background: var(--pill-bg);
+  color: var(--pill-fg);
   border-radius: 999px;
   padding: 6px 14px 6px 10px;
   font-family: var(--font-mono);
@@ -326,7 +380,7 @@ hr {
   border: 1px solid var(--line);
   border-radius: 6px;
   overflow: hidden;
-  background: #e9edea;
+  background: var(--map-bg);
 }
 
 .map-frame iframe {
@@ -379,7 +433,7 @@ hr {
   font-family: var(--font-mono);
   font-size: 0.62rem;
   letter-spacing: 0.1em;
-  color: #fff;
+  color: var(--badge-fg);
   background: var(--gorse);
   border-radius: 3px;
   padding: 2px 7px;
@@ -643,14 +697,14 @@ hr {
 .prose code {
   font-family: var(--font-mono);
   font-size: 0.86em;
-  background: #ecebe4;
+  background: var(--code-bg);
   padding: 1px 5px;
   border-radius: 3px;
 }
 
 .prose pre {
   background: var(--slate);
-  color: var(--paper);
+  color: var(--on-dark);
   padding: 14px;
   border-radius: 6px;
   overflow-x: auto;
@@ -757,7 +811,7 @@ hr {
   left: 0;
   right: 0;
   z-index: 30;
-  background: var(--ink);
+  background: var(--nav-bg);
   display: flex;
   padding-bottom: env(safe-area-inset-bottom);
 }
@@ -783,7 +837,7 @@ hr {
 }
 
 .site-nav a[aria-current='page'] {
-  color: var(--paper);
+  color: var(--on-dark);
 }
 
 .site-nav a[aria-current='page'] .ic {
@@ -793,7 +847,7 @@ hr {
 .site-nav a:hover,
 .site-nav a:focus-visible {
   text-decoration: none;
-  color: var(--paper);
+  color: var(--on-dark);
 }
 
 /* ---------- footer ---------- */
@@ -827,7 +881,7 @@ hr {
   border: 1px dashed var(--landranger);
   border-radius: 6px;
   padding: 12px 14px;
-  background: #fff;
+  background: var(--card);
 }
 
 .placeholder::before {
@@ -847,16 +901,16 @@ hr {
   }
 
   h1 {
-    font-size: 2.9rem;
+    font-size: 2.45rem;
   }
 
   h1.sub {
-    font-size: 2.2rem;
+    font-size: 2rem;
   }
 
   .site-nav {
     position: static;
-    background: var(--slate);
+    background: var(--header-bg);
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     padding-bottom: 0;
   }
