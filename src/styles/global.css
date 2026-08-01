@@ -228,6 +228,24 @@ section.flush {
   border-bottom: 0;
 }
 
+/* Wide data graphics (the elevation tracker) break out of the 680px reading
+   column on larger screens — squeezed into the measure the profile is
+   unreadable. Below that it stays in flow and scrolls sideways instead. */
+.bleed {
+  width: min(1120px, 100vw - 32px);
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+@media (max-width: 720px) {
+  .bleed {
+    width: auto;
+    left: auto;
+    transform: none;
+  }
+}
+
 .eyebrow {
   font-family: var(--font-mono);
   font-size: var(--text-eyebrow);

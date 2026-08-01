@@ -84,12 +84,45 @@ and still live.
 | Posting API (runs on Cloudflare) | `functions/api/` |
 | Backup CMS config | `.pages.yml` |
 | The one-off WordPress importer | `scripts/import-wordpress.mjs` |
+| Elevation tracker component | `src/components/ElevationTracker.astro` |
+| Route/overnight data for the tracker | `src/data/routes.ts` |
+| Garmin MapShare proxy | `functions/api/mapshare.ts` |
 
 **Things worth knowing in `src/site.ts`:** the film embeds are placeholders
 until a YouTube ID is filled in (`FILMS`), and the contact address is set there
 in one place.
 
 ---
+
+## The live tracker
+
+The elevation profile on `/coast-to-coast` — and, once it has data, on
+`/snowdonia-way` — is the tracker carried over from the old site: the route
+profile, a clickable dot for every overnight stop, and during a walk a marker
+that moves along the profile from the Garmin inReach position.
+
+Live position comes through `functions/api/mapshare.ts`, because Garmin sends
+no CORS headers and the browser cannot fetch the feed directly. It caches for
+four minutes, so the number of people watching does not change how often
+Garmin is asked.
+
+**The Snowdonia Way tracker is empty until its route data exists.** The
+component renders nothing at all while `route` is empty, so the page stays
+clean. To bring it up, `src/data/routes.ts` needs three things, all of which
+fall out of the planning GPX:
+
+```bash
+node scripts/gpx-to-route.mjs snowdonia-way.gpx --sample 0.5 --wp 0.25
+```
+
+That prints a `route` array (the profile), a `waypoints` array (what converts
+a live GPS fix into a point on the profile), and the cumulative mileage every
+five miles. Paste the first two into `SNOWDONIA_WAY`, then write the `days`
+array by hand — one entry per night, with the end mile, the place, the type of
+stay and a website if there is one. Those are the dots.
+
+Summit heights from a GPX are approximate; correct the ones that matter to
+their OS values and add a label as a third element, `[12.4, 1085, "Yr Wyddfa"]`.
 
 ## Working on it locally
 

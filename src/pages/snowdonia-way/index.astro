@@ -4,8 +4,10 @@ import LivePill from '../../components/LivePill.astro';
 import ConditionsCard from '../../components/ConditionsCard.astro';
 import VideoEmbed from '../../components/VideoEmbed.astro';
 import PostCard from '../../components/PostCard.astro';
+import ElevationTracker from '../../components/ElevationTracker.astro';
 import { getPostsByCategory, inWalkOrder, postUrl } from '../../lib/posts';
 import { MAPSHARE_URL, SNOWDONIA, YOUTUBE_CHANNEL } from '../../site';
+import { SNOWDONIA_WAY } from '../../data/routes';
 
 const posts = await getPostsByCategory('snowdonia-way');
 
@@ -29,6 +31,14 @@ const dayIndex = inWalkOrder(posts);
     <h1 class="sub">Snowdon, Everest &amp; Crib Goch</h1>
     <p class="small" style="margin-top:8px">{SNOWDONIA.strapline}</p>
   </section>
+
+  {
+    SNOWDONIA_WAY.route.length > 1 && (
+      <section class="bleed">
+        <ElevationTracker data={SNOWDONIA_WAY} />
+      </section>
+    )
+  }
 
   <section>
     <h2>Where is he now <LivePill label="TRACKING" /></h2>

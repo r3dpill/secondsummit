@@ -1,0 +1,789 @@
+---
+import type { RouteData } from '../data/routes';
+import { STAY_TYPES } from '../data/routes';
+
+/**
+ * The interactive elevation tracker, carried over from the Live Tracking page
+ * on the old site. Same graphic, same behaviour: the profile, the region
+ * bands, summit and town labels, and a clickable dot per overnight stop that
+ * reveals where he slept and links to the place.
+ *
+ * On a live route it also polls Garmin MapShare, converts the InReach position
+ * to a route mile against the GPS waypoints, and moves a marker along the
+ * profile with the latest message underneath.
+ *
+ * Chart chrome (grid, axis text, backdrops) is drawn from the site's CSS
+ * tokens so it sits on the page properly; the accommodation-type colours are
+ * the originals, because they carry meaning.
+ */
+interface Props {
+  data: RouteData;
+  /** Where to poll for live position. Omit to disable polling entirely. */
+  mapshareEndpoint?: string;
+}
+
+const { data, mapshareEndpoint = '/api/mapshare' } = Astro.props;
+const legend = Object.entries(STAY_TYPES);
+const usedTypes = new Set(data.days.map((d) => d.type));
+
+/** Nothing to plot until the route data exists — render nothing at all. */
+const hasRoute = data.route.length > 1;
+---
+
+{ hasRoute && (
+
+<div class="tracker" data-tracker>
+  <div class="t-head">
+    <div>
+      <div class="t-title">{data.title}</div>
+      <div class="t-sub">{data.subtitle}</div>
+    </div>
+    <div class="t-legend">
+      {
+        legend
+          .filter(([key]) => usedTypes.has(key as never))
+          .map(([, info]) => (
+            <span
+              class="t-legend-item"
+              style={`background:${info.color}22;color:${info.color};border:1px solid ${info.color}44`}
+            >
+              {info.icon} {info.label}
+            </span>
+          ))
+      }
+    </div>
+  </div>
+
+  <div class="t-status" data-status>
+    <span class="t-dot" class:list={[data.live ? 'live' : 'done']}></span>
+    <span>{data.live ? 'Waiting for the first position' : 'Walk complete'}</span>
+  </div>
+
+  <div class="t-inreach" data-inreach hidden>
+    <div class="t-inreach-label">Latest inReach message</div>
+    <div class="t-inreach-msg" data-inreach-msg></div>
+    <div class="t-inreach-time" data-inreach-time></div>
+  </div>
+
+  <div class="t-chart-wrap">
+    <svg data-chart role="img" aria-label={`Elevation profile: ${data.subtitle}`}></svg>
+  </div>
+
+  <div class="t-tip" data-tip hidden>
+    <div class="t-tip-day" data-tip-day></div>
+    <div class="t-tip-detail" data-tip-detail></div>
+    <div class="t-tip-detail" data-tip-elev></div>
+  </div>
+
+  <p class="t-hint" data-hint>Tap or hover the markers to see each day's route and where he slept</p>
+
+  <div class="t-detail" data-detail></div>
+
+  <script
+    type="application/json"
+    data-route-data
+    set:html={JSON.stringify({ ...data, types: STAY_TYPES, endpoint: data.live ? mapshareEndpoint : null })}
+  />
+</div>
+) }
+
+<style>
+  .tracker {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--card);
+    padding: 16px 14px 12px;
+  }
+
+  .t-head {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+  }
+
+  .t-title {
+    font-family: var(--font-display);
+    font-weight: 650;
+    font-size: 1.05rem;
+    line-height: 1.2;
+  }
+
+  .t-sub {
+    font-size: 0.78rem;
+    color: var(--muted);
+    margin-top: 3px;
+  }
+
+  .t-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+
+  .t-legend-item {
+    font-family: var(--font-mono);
+    font-size: 0.58rem;
+    letter-spacing: 0.04em;
+    padding: 3px 7px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+
+  .t-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 10px;
+  }
+
+  .t-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex: 0 0 auto;
+  }
+
+  .t-dot.live {
+    background: var(--live);
+    animation: t-pulse 1.6s ease-in-out infinite;
+  }
+
+  .t-dot.done {
+    background: var(--muted);
+  }
+
+  @keyframes t-pulse {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.35;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .t-dot.live {
+      animation: none;
+    }
+  }
+
+  .t-inreach {
+    border-left: 3px solid var(--live);
+    background: color-mix(in srgb, var(--live) 10%, transparent);
+    border-radius: 0 6px 6px 0;
+    padding: 10px 12px;
+    margin-bottom: 12px;
+  }
+
+  .t-inreach-label {
+    font-family: var(--font-mono);
+    font-size: 0.58rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--live);
+    margin-bottom: 4px;
+  }
+
+  .t-inreach-msg {
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+
+  .t-inreach-time {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    color: var(--muted);
+    margin-top: 5px;
+  }
+
+  /* The profile needs width to be readable; on a phone it scrolls sideways. */
+  .t-chart-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    position: relative;
+  }
+
+  .t-chart-wrap svg {
+    display: block;
+    min-width: 800px;
+  }
+
+  .tracker {
+    position: relative;
+  }
+
+  .t-tip {
+    position: absolute;
+    z-index: 5;
+    pointer-events: none;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-left-width: 3px;
+    border-radius: 6px;
+    padding: 8px 10px;
+    min-width: 150px;
+    max-width: 220px;
+    box-shadow: 0 6px 20px rgb(0 0 0 / 35%);
+  }
+
+  .t-tip-day {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.06em;
+    font-weight: 500;
+    margin-bottom: 3px;
+  }
+
+  .t-tip-detail {
+    font-size: 0.78rem;
+    line-height: 1.4;
+  }
+
+  .t-hint {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.05em;
+    color: var(--muted);
+    text-align: center;
+    padding: 8px 0 2px;
+  }
+
+  .t-detail {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 14px;
+    font-size: 0.8rem;
+    padding: 8px 2px 0;
+    border-top: 1px solid var(--line);
+    margin-top: 6px;
+    min-height: 1.6em;
+  }
+
+  .t-detail:empty {
+    border-top: 0;
+  }
+</style>
+
+<script>
+  import type { RouteData, StayType } from '../data/routes';
+
+  type Types = Record<StayType, { color: string; icon: string; label: string }>;
+  type Payload = RouteData & { types: Types; endpoint: string | null };
+
+  const NS = 'http://www.w3.org/2000/svg';
+
+  /** Read a CSS custom property off the tracker element. */
+  const token = (el: Element, name: string, fallback: string) =>
+    getComputedStyle(el).getPropertyValue(name).trim() || fallback;
+
+  document.querySelectorAll<HTMLElement>('[data-tracker]').forEach((root) => {
+    const payload = root.querySelector('[data-route-data]')?.textContent;
+    if (!payload) return;
+    const data: Payload = JSON.parse(payload);
+    const TYPES = data.types;
+
+    const svg = root.querySelector<SVGSVGElement>('[data-chart]')!;
+    const tip = root.querySelector<HTMLElement>('[data-tip]')!;
+    const detail = root.querySelector<HTMLElement>('[data-detail]')!;
+    const hint = root.querySelector<HTMLElement>('[data-hint]')!;
+    const statusEl = root.querySelector<HTMLElement>('[data-status]')!;
+
+    const colours = {
+      grid: token(root, '--line', '#4a5a65'),
+      axis: token(root, '--muted', '#a8b6bd'),
+      ink: token(root, '--ink', '#e9e7df'),
+      card: token(root, '--card', '#33414a'),
+      accent: token(root, '--landranger', '#f28dbb'),
+      sea: '#58A6FF',
+    };
+
+    const margin = { top: 40, right: 30, bottom: 65, left: 55 };
+    let W = 0,
+      H = 0,
+      plotW = 0,
+      plotH = 0;
+    let walkerMile: number | null = null;
+
+    const chartWrap = root.querySelector<HTMLElement>('.t-chart-wrap')!;
+
+    function resize() {
+      // Measure the scroll container, not the card: sizing off the card
+      // includes its padding and pushes the chart into needless horizontal
+      // scroll on desktop. Below 800px it genuinely does scroll, by design —
+      // the profile is unreadable squeezed onto a phone.
+      W = Math.max(800, chartWrap.clientWidth);
+      H = Math.max(300, Math.min(450, W * 0.38));
+      plotW = W - margin.left - margin.right;
+      plotH = H - margin.top - margin.bottom;
+      svg.setAttribute('width', String(W));
+      svg.setAttribute('height', String(H));
+      svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+    }
+
+    const xS = (mile: number) => margin.left + (mile / data.maxMile) * plotW;
+    const yS = (elev: number) => margin.top + plotH - (elev / data.maxElev) * plotH;
+
+    function elevAt(mile: number): number {
+      for (let i = 1; i < data.route.length; i++) {
+        if (data.route[i][0] >= mile) {
+          const [m0, e0] = data.route[i - 1];
+          const [m1, e1] = data.route[i];
+          if (m1 === m0) return e0;
+          return e0 + ((mile - m0) / (m1 - m0)) * (e1 - e0);
+        }
+      }
+      return data.route[data.route.length - 1][1];
+    }
+
+    function mk(tag: string, attrs: Record<string, string | number>, parent: Element) {
+      const el = document.createElementNS(NS, tag);
+      for (const [k, v] of Object.entries(attrs)) {
+        if (k === 'text') el.textContent = String(v);
+        else el.setAttribute(k, String(v));
+      }
+      parent.appendChild(el);
+      return el;
+    }
+
+    function draw() {
+      svg.innerHTML = '';
+      resize();
+
+      const defs = mk('defs', {}, svg);
+      const area = mk('linearGradient', { id: 'tkArea', x1: '0', x2: '0', y1: '0', y2: '1' }, defs);
+      mk('stop', { offset: '0%', 'stop-color': '#3FB950', 'stop-opacity': '0.35' }, area);
+      mk('stop', { offset: '60%', 'stop-color': '#1A7F37', 'stop-opacity': '0.15' }, area);
+      mk('stop', { offset: '100%', 'stop-color': colours.card, 'stop-opacity': '0' }, area);
+
+      const line = mk('linearGradient', { id: 'tkLine', x1: '0', x2: '1', y1: '0', y2: '0' }, defs);
+      mk('stop', { offset: '0%', 'stop-color': '#58A6FF' }, line);
+      mk('stop', { offset: '30%', 'stop-color': '#3FB950' }, line);
+      mk('stop', { offset: '60%', 'stop-color': '#D4A844' }, line);
+      mk('stop', { offset: '100%', 'stop-color': '#E8724A' }, line);
+
+      const glow = mk('filter', { id: 'tkGlow' }, defs);
+      mk('feGaussianBlur', { stdDeviation: '3', result: 'blur' }, glow);
+      const merge = mk('feMerge', {}, glow);
+      mk('feMergeNode', { in: 'blur' }, merge);
+      mk('feMergeNode', { in: 'SourceGraphic' }, merge);
+
+      // Region bands
+      for (const r of data.regions) {
+        mk(
+          'rect',
+          { x: xS(r.start), y: margin.top, width: xS(r.end) - xS(r.start), height: plotH, fill: r.color },
+          svg,
+        );
+        mk(
+          'text',
+          {
+            x: (xS(r.start) + xS(r.end)) / 2,
+            y: margin.top + 14,
+            'text-anchor': 'middle',
+            'font-size': '9',
+            fill: colours.axis,
+            'font-weight': '600',
+            'letter-spacing': '0.1em',
+            opacity: '0.75',
+            text: r.label,
+          },
+          svg,
+        );
+      }
+
+      // Elevation grid
+      for (const e of data.elevTicks) {
+        mk(
+          'line',
+          { x1: margin.left, x2: margin.left + plotW, y1: yS(e), y2: yS(e), stroke: colours.grid, 'stroke-width': '1' },
+          svg,
+        );
+        mk(
+          'text',
+          { x: margin.left - 8, y: yS(e) + 4, 'text-anchor': 'end', 'font-size': '10', fill: colours.axis, text: `${e}m` },
+          svg,
+        );
+      }
+
+      // Mile markers
+      const lastMile = data.mileTicks[data.mileTicks.length - 1];
+      for (const m of data.mileTicks) {
+        const edge = m === 0 || m === lastMile;
+        mk(
+          'line',
+          {
+            x1: xS(m),
+            x2: xS(m),
+            y1: margin.top,
+            y2: margin.top + plotH,
+            stroke: colours.grid,
+            'stroke-width': '1',
+            'stroke-dasharray': edge ? 'none' : '2,4',
+          },
+          svg,
+        );
+        mk(
+          'text',
+          {
+            x: xS(m),
+            y: margin.top + plotH + 16,
+            'text-anchor': 'middle',
+            'font-size': '10',
+            fill: colours.axis,
+            text: m === lastMile ? `${Math.round(m)}mi` : `${m}mi`,
+          },
+          svg,
+        );
+      }
+
+      // Profile
+      let d = `M ${xS(data.route[0][0])} ${yS(data.route[0][1])}`;
+      for (let i = 1; i < data.route.length; i++) {
+        const [m, e] = data.route[i];
+        const [pm, pe] = data.route[i - 1];
+        const dx = m - pm;
+        d += ` C ${xS(pm + dx * 0.4)} ${yS(pe)}, ${xS(pm + dx * 0.6)} ${yS(e)}, ${xS(m)} ${yS(e)}`;
+      }
+      const last = data.route[data.route.length - 1];
+      mk('path', { d: `${d} L ${xS(last[0])} ${yS(0)} L ${xS(data.route[0][0])} ${yS(0)} Z`, fill: 'url(#tkArea)' }, svg);
+      mk(
+        'path',
+        { d, fill: 'none', stroke: 'url(#tkLine)', 'stroke-width': '2.5', 'stroke-linecap': 'round', 'stroke-linejoin': 'round' },
+        svg,
+      );
+
+      if (data.startLabel) {
+        mk(
+          'text',
+          { x: xS(0) + 4, y: yS(0) - 4, 'font-size': '8', fill: colours.sea, 'font-weight': '600', text: data.startLabel },
+          svg,
+        );
+      }
+      if (data.endLabel) {
+        mk(
+          'text',
+          {
+            x: xS(last[0]) - 4,
+            y: yS(0) - 4,
+            'text-anchor': 'end',
+            'font-size': '8',
+            fill: colours.sea,
+            'font-weight': '600',
+            text: data.endLabel,
+          },
+          svg,
+        );
+      }
+
+      // Summit labels first — they always get their space. The start/end
+      // labels are seeded in so a town name at sea level (St Bees, Robin
+      // Hood's Bay) does not print on top of "IRISH SEA" / "NORTH SEA".
+      const usedX: number[] = [];
+      if (data.startLabel) usedX.push(xS(data.route[0][0]));
+      if (data.endLabel) usedX.push(xS(last[0]));
+      for (const pt of data.route) {
+        const name = pt[2];
+        if (!name || !data.summitLabels.includes(name)) continue;
+        const cx = xS(pt[0]);
+        usedX.push(cx);
+        mk(
+          'text',
+          { x: cx, y: yS(pt[1]) - 12, 'text-anchor': 'middle', 'font-size': '8.5', fill: colours.ink, 'font-weight': '700', text: name },
+          svg,
+        );
+        mk(
+          'text',
+          { x: cx, y: yS(pt[1]) - 3, 'text-anchor': 'middle', 'font-size': '7', fill: colours.axis, 'font-weight': '500', text: `${Math.round(pt[1])}m` },
+          svg,
+        );
+        if (data.highestPoint === name) {
+          mk(
+            'text',
+            {
+              x: cx,
+              y: yS(pt[1]) - 21,
+              'text-anchor': 'middle',
+              'font-size': '7',
+              fill: colours.accent,
+              'font-weight': '700',
+              'letter-spacing': '0.05em',
+              text: '▲ HIGHEST POINT',
+            },
+            svg,
+          );
+        }
+      }
+
+      // Towns, only where they fit.
+      for (const pt of data.route) {
+        const name = pt[2];
+        if (!name || !data.townLabels.includes(name)) continue;
+        const cx = xS(pt[0]);
+        if (usedX.some((x) => Math.abs(cx - x) < 42)) continue;
+        usedX.push(cx);
+        if (data.keyTowns.includes(name)) {
+          const tw = name.length * 4.5 + 8;
+          mk('rect', { x: cx - tw / 2, y: yS(pt[1]) - 18, width: tw, height: 12, rx: 3, fill: colours.card, opacity: '0.75' }, svg);
+        }
+        mk(
+          'text',
+          { x: cx, y: yS(pt[1]) - 10, 'text-anchor': 'middle', 'font-size': '8', fill: colours.axis, 'font-weight': '500', text: name },
+          svg,
+        );
+      }
+
+      // Overnight markers — the clickable dots.
+      data.days.forEach((day, i) => {
+        const e = elevAt(day.endMile);
+        const cx = xS(day.endMile);
+        const cy = yS(e);
+        const t = TYPES[day.type];
+
+        mk(
+          'line',
+          { x1: cx, x2: cx, y1: cy, y2: yS(0), stroke: t.color, 'stroke-width': '0.5', 'stroke-dasharray': '3,3', opacity: '0.2', 'data-di': i, class: 'tk-dline' },
+          svg,
+        );
+        mk(
+          'text',
+          { x: cx, y: yS(0) + 32, 'text-anchor': 'middle', 'font-size': '9', fill: colours.axis, 'font-weight': '500', 'data-di': i, class: 'tk-dlbl', text: `D${day.day}` },
+          svg,
+        );
+
+        const ring = mk('circle', { cx, cy, r: 10, fill: 'none', stroke: t.color, 'stroke-width': '1', 'pointer-events': 'none', opacity: '0.3' }, svg);
+        if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+          const anim = document.createElementNS(NS, 'animate');
+          anim.setAttribute('attributeName', 'opacity');
+          anim.setAttribute('values', '0.2;0.7;0.2');
+          anim.setAttribute('dur', '2.5s');
+          anim.setAttribute('repeatCount', 'indefinite');
+          ring.appendChild(anim);
+        }
+
+        const hit = mk('circle', { cx, cy, r: 16, fill: 'transparent', cursor: 'pointer', 'data-di': i, tabindex: '0', role: 'button', 'aria-label': `Day ${day.day}: ${day.label}` }, svg);
+        mk('circle', { cx, cy, r: 5.5, fill: t.color, stroke: colours.card, 'stroke-width': '2', 'pointer-events': 'none', 'data-di': i, class: 'tk-ddot' }, svg);
+
+        hit.addEventListener('mouseenter', () => showTip(i, cx, cy));
+        hit.addEventListener('mouseleave', hideTip);
+        hit.addEventListener('focus', () => showTip(i, cx, cy));
+        hit.addEventListener('blur', hideTip);
+        hit.addEventListener('touchstart', (ev) => {
+          ev.preventDefault();
+          showTip(i, cx, cy);
+        });
+      });
+
+      // Live position marker
+      const walker = mk('g', { 'data-walker': '', style: 'display:none', filter: 'url(#tkGlow)' }, svg);
+      mk('circle', { 'data-walker-pulse': '', r: '12', fill: 'none', stroke: colours.accent, 'stroke-width': '1.5', opacity: '0.4' }, walker);
+      mk('circle', { 'data-walker-dot': '', r: '4', fill: colours.accent, stroke: '#fff', 'stroke-width': '2.5' }, walker);
+      mk('rect', { 'data-walker-bg': '', width: '60', height: '18', rx: '9', fill: colours.accent, x: '-30', y: '-28' }, walker);
+      mk('text', { 'data-walker-label': '', 'text-anchor': 'middle', y: '-16', 'font-size': '9', fill: '#171F24', 'font-weight': '700', text: data.walkerLabel }, walker);
+    }
+
+    function showTip(i: number, cx: number, cy: number) {
+      const day = data.days[i];
+      const t = TYPES[day.type];
+      const e = elevAt(day.endMile);
+
+      const dayEl = root.querySelector<HTMLElement>('[data-tip-day]')!;
+      const detEl = root.querySelector<HTMLElement>('[data-tip-detail]')!;
+      const elevEl = root.querySelector<HTMLElement>('[data-tip-elev]')!;
+      dayEl.textContent = `Day ${day.day}: ${day.label}`;
+      dayEl.style.color = t.color;
+      detEl.textContent = `${t.icon} ${day.name}`;
+      detEl.style.color = t.color;
+      elevEl.textContent = `${day.dist} miles · ${Math.round(e)}m elevation`;
+      elevEl.style.color = colours.axis;
+      tip.style.borderLeftColor = t.color;
+
+      const sr = svg.getBoundingClientRect();
+      const cr = root.getBoundingClientRect();
+      let left = sr.left - cr.left + cx - 80;
+      let top = sr.top - cr.top + cy - 85;
+      left = Math.max(10, Math.min(left, cr.width - 180));
+      if (top < 10) top = sr.top - cr.top + cy + 20;
+      tip.style.left = `${left}px`;
+      tip.style.top = `${top}px`;
+      tip.hidden = false;
+
+      root.querySelectorAll(`.tk-ddot[data-di="${i}"]`).forEach((d) => d.setAttribute('r', '8'));
+      root.querySelectorAll(`.tk-dline[data-di="${i}"]`).forEach((d) => {
+        d.setAttribute('stroke-width', '1.5');
+        d.setAttribute('opacity', '0.6');
+      });
+      root.querySelectorAll(`.tk-dlbl[data-di="${i}"]`).forEach((d) => {
+        d.setAttribute('fill', t.color);
+        d.setAttribute('font-weight', '700');
+      });
+
+      hint.style.display = 'none';
+
+      const parts = [
+        `<span><strong style="color:${t.color}">Day ${day.day}</strong></span>`,
+        `<span>${day.dist} miles</span>`,
+        `<span>${day.name}</span>`,
+        `<span style="color:${t.color}">${t.label}</span>`,
+      ];
+      if (day.url) {
+        parts.push(
+          `<span><a href="${day.url}" target="_blank" rel="noopener" style="color:${t.color}">Visit website ↗</a></span>`,
+        );
+      }
+      detail.innerHTML = parts.join('');
+    }
+
+    function hideTip() {
+      tip.hidden = true;
+      root.querySelectorAll('.tk-ddot').forEach((d) => d.setAttribute('r', '5.5'));
+      root.querySelectorAll('.tk-dline').forEach((d) => {
+        d.setAttribute('stroke-width', '0.5');
+        d.setAttribute('opacity', '0.2');
+      });
+      root.querySelectorAll('.tk-dlbl').forEach((d) => {
+        d.setAttribute('fill', colours.axis);
+        d.setAttribute('font-weight', '500');
+      });
+    }
+
+    function moveWalker(mile: number | null) {
+      const g = root.querySelector<SVGGElement>('[data-walker]');
+      if (!g) return;
+      if (mile === null || mile > data.route[data.route.length - 1][0] + 0.5) {
+        g.style.display = 'none';
+        return;
+      }
+      g.style.display = '';
+      const cx = xS(mile);
+      const cy = yS(elevAt(mile));
+      const switched = data.walkerLabelSwitchMile != null && mile > data.walkerLabelSwitchMile;
+      const label = switched ? (data.walkerLabelAfter ?? data.walkerLabel) : data.walkerLabel;
+      const lblW = Math.max(60, label.length * 7 + 16);
+
+      const set = (sel: string, attrs: Record<string, string | number>) => {
+        const el = root.querySelector(sel);
+        if (el) for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, String(v));
+      };
+      set('[data-walker-dot]', { cx, cy });
+      set('[data-walker-pulse]', { cx, cy });
+      set('[data-walker-bg]', { x: cx - lblW / 2, y: cy - 28, width: lblW });
+      set('[data-walker-label]', { x: cx, y: cy - 16 });
+      const lbl = root.querySelector('[data-walker-label]');
+      if (lbl) lbl.textContent = label;
+
+      statusEl.innerHTML =
+        `<span class="t-dot live"></span><span>Live — mile ${mile.toFixed(1)} · ${Math.round(elevAt(mile))}m · ${label}</span>`;
+    }
+
+    /** Nearest-two-waypoint interpolation, as on the original. */
+    function gpsToMile(lat: number, lon: number): number {
+      let best1 = 0,
+        best1Dist = Infinity,
+        best2 = 1,
+        best2Dist = Infinity;
+      for (let i = 0; i < data.waypoints.length; i++) {
+        const dx = (lon - data.waypoints[i][1]) * Math.cos((lat * Math.PI) / 180) * 69.172;
+        const dy = (lat - data.waypoints[i][0]) * 69.172;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < best1Dist) {
+          best2 = best1;
+          best2Dist = best1Dist;
+          best1 = i;
+          best1Dist = dist;
+        } else if (dist < best2Dist) {
+          best2 = i;
+          best2Dist = dist;
+        }
+      }
+      if (best1Dist < 0.02) return data.waypoints[best1][2];
+      const total = best1Dist + best2Dist;
+      if (total === 0) return data.waypoints[best1][2];
+      const w1 = 1 - best1Dist / total;
+      const w2 = 1 - best2Dist / total;
+      return (data.waypoints[best1][2] * w1 + data.waypoints[best2][2] * w2) / (w1 + w2);
+    }
+
+    async function fetchLive() {
+      if (!data.endpoint) return;
+      try {
+        const res = await fetch(data.endpoint);
+        if (!res.ok) return;
+        const doc = new DOMParser().parseFromString(await res.text(), 'text/xml');
+
+        let lat: number | null = null;
+        let lon: number | null = null;
+        let msg = '';
+        let time = '';
+
+        doc.querySelectorAll('Placemark').forEach((pm) => {
+          const point = pm.querySelector('Point coordinates');
+          if (point) {
+            const parts = (point.textContent ?? '').trim().split(',');
+            if (parts.length >= 2) {
+              lon = parseFloat(parts[0]);
+              lat = parseFloat(parts[1]);
+            }
+          }
+          pm.querySelectorAll('ExtendedData Data').forEach((el) => {
+            const name = el.getAttribute('name');
+            const txt = el.querySelector('value')?.textContent?.trim() ?? '';
+            if (!txt) return;
+            if (name === 'Text') msg = txt;
+            if (name === 'Time') {
+              const d = new Date(`${txt} UTC`);
+              time = Number.isNaN(d.getTime())
+                ? txt
+                : new Intl.DateTimeFormat('en-GB', {
+                    day: 'numeric',
+                    month: 'short',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    timeZone: 'Europe/London',
+                  }).format(d);
+            }
+          });
+        });
+
+        if (lat !== null && lon !== null) {
+          walkerMile = gpsToMile(lat, lon);
+          moveWalker(walkerMile);
+        }
+
+        if (msg) {
+          const panel = root.querySelector<HTMLElement>('[data-inreach]')!;
+          panel.hidden = false;
+          root.querySelector('[data-inreach-msg]')!.textContent = msg;
+          root.querySelector('[data-inreach-time]')!.textContent = time
+            ? `${time} via Garmin inReach`
+            : 'via Garmin inReach';
+        }
+      } catch {
+        // Offline or Garmin unreachable — leave the last known position up.
+      }
+    }
+
+    draw();
+    if (data.endpoint) {
+      fetchLive();
+      setInterval(fetchLive, 300_000);
+    }
+
+    let resizeTimer: number | undefined;
+    window.addEventListener('resize', () => {
+      window.clearTimeout(resizeTimer);
+      resizeTimer = window.setTimeout(() => {
+        draw();
+        if (walkerMile !== null) moveWalker(walkerMile);
+      }, 150);
+    });
+  });
+</script>
