@@ -16,6 +16,10 @@
  */
 
 import { SNOWDONIA } from '../site';
+import cribGoch from '../assets/photos/snowdonia/crib-goch.jpg';
+import penYGwryd from '../assets/photos/snowdonia/pen-y-gwryd.jpg';
+import llynCasegFraith from '../assets/photos/snowdonia/llyn-caseg-fraith.jpg';
+import conwyCastle from '../assets/photos/snowdonia/conwy-castle.jpg';
 
 export type PageMode = 'teaser' | 'live';
 
@@ -115,32 +119,40 @@ export const HISTORY = [
 ] as const;
 
 /**
- * Photo band. Empty styled slots ship until Toby supplies photographs — his
- * own, or properly licensed. Do not fill these with stock imagery.
+ * Photo band.
  *
- * To add one: put the file in src/assets/snowdonia/, import it at the top of
- * this file, and set `image`.
+ * PLACEHOLDERS, licensed properly. These are Wikimedia Commons photographs
+ * under CC BY-SA, which is free to use commercially but REQUIRES the credit
+ * shown with each one — author, licence, and a link back. Do not strip the
+ * `credit` field, and do not swap in an image without one.
+ *
+ * Replace with Toby's own photographs when he has them; then the credit can
+ * simply be dropped.
  */
 export const PHOTO_SLOTS = [
   {
     caption: 'Crib Goch, looking along the arête',
     alt: 'The Crib Goch ridge',
-    image: null,
+    image: cribGoch,
+    credit: { author: 'Diliff', licence: 'CC BY-SA 3.0', licenceUrl: 'https://creativecommons.org/licenses/by-sa/3.0', source: 'https://commons.wikimedia.org/wiki/File:Crib_Goch,_Snowdonia,_Wales_-_August_2007.jpg' },
   },
   {
     caption: 'The Pen-y-Gwryd — the Everest team’s training base',
     alt: 'The Pen-y-Gwryd hotel',
-    image: null,
+    image: penYGwryd,
+    credit: { author: 'Peter S', licence: 'CC BY-SA 2.0', licenceUrl: 'https://creativecommons.org/licenses/by-sa/2.0', source: 'https://commons.wikimedia.org/wiki/File:Pen_y_Gwryd_Hotel_-_geograph.org.uk_-_4757553.jpg' },
   },
   {
     caption: 'Llyn y Caseg-fraith, under Tryfan — the wild camp',
     alt: 'Llyn y Caseg-fraith with Tryfan behind',
-    image: null,
+    image: llynCasegFraith,
+    credit: { author: 'Peter S', licence: 'CC BY-SA 2.0', licenceUrl: 'https://creativecommons.org/licenses/by-sa/2.0', source: 'https://commons.wikimedia.org/wiki/File:Llyn_Caseg-fraith_and_Tryfan_-_geograph.org.uk_-_3789840.jpg' },
   },
   {
-    caption: 'Conwy castle from the estuary — the finish',
-    alt: 'Conwy castle seen across the estuary',
-    image: null,
+    caption: 'Conwy castle and the bridges over the river — the finish',
+    alt: 'Conwy castle and the bridges across the River Conwy',
+    image: conwyCastle,
+    credit: { author: 'Nilfanion', licence: 'CC BY-SA 4.0', licenceUrl: 'https://creativecommons.org/licenses/by-sa/4.0', source: 'https://commons.wikimedia.org/wiki/File:Conwy_Castle_and_bridges_(8044).jpg' },
   },
 ] as const;
 

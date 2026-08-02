@@ -8,10 +8,23 @@ import type { ImageMetadata } from 'astro';
  * before the photographs exist. No stock imagery — an empty slot is honest,
  * a borrowed picture is not.
  */
+interface Credit {
+  author: string;
+  licence: string;
+  licenceUrl?: string;
+  source?: string;
+}
+
 interface Slot {
   caption: string;
   alt: string;
   image?: ImageMetadata | null;
+  /**
+   * Required for anything not shot by Toby. CC BY-SA obliges us to name the
+   * photographer, state the licence and link back — so the credit renders
+   * with the picture rather than sitting in a file nobody reads.
+   */
+  credit?: Credit | null;
 }
 
 interface Props {
@@ -42,7 +55,28 @@ const { slots } = Astro.props;
               <span class="waiting">Photograph to come</span>
             </div>
           )}
-          <figcaption>{slot.caption}</figcaption>
+          <figcaption>
+            {slot.caption}
+            {slot.credit && (
+              <span class="credit">
+                Photo:{' '}
+                {slot.credit.source ? (
+                  <a href={slot.credit.source} rel="noopener nofollow">
+                    {slot.credit.author}
+                  </a>
+                ) : (
+                  slot.credit.author
+                )}{' '}
+                {slot.credit.licenceUrl ? (
+                  <a href={slot.credit.licenceUrl} rel="license noopener nofollow">
+                    {slot.credit.licence}
+                  </a>
+                ) : (
+                  slot.credit.licence
+                )}
+              </span>
+            )}
+          </figcaption>
         </figure>
       </li>
     ))
@@ -106,6 +140,21 @@ const { slots } = Astro.props;
     letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--muted);
+  }
+
+  .credit {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 0.56rem;
+    letter-spacing: 0.05em;
+    opacity: 0.75;
+    margin-top: 4px;
+  }
+
+  .credit a {
+    color: inherit;
+    font-weight: 400;
+    text-decoration: underline;
   }
 
   figcaption {
