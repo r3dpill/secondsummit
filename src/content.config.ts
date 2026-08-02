@@ -52,7 +52,6 @@ const pages = defineCollection({
       title: z.string(),
       description: z.string().optional(),
       eyebrow: z.string().optional(),
-      gridref: z.string().optional(),
       cover: image().optional(),
       coverAlt: z.string().optional(),
       legacyUrl: z.string().optional(),

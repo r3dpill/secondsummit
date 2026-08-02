@@ -2,7 +2,6 @@
 title: The Walk
 eyebrow: Wainwright's Coast to Coast
 description: "St Bees to Robin Hood's Bay: the route, the three National Parks, Alfred Wainwright, and what walking it self-supported in late March actually meant."
-gridref: 'NY 962 118 · NORTH PENNINES'
 legacyUrl: '/the-walk/'
 ---
 
