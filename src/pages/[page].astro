@@ -22,7 +22,7 @@ const { page } = Astro.props;
 const { Content } = await render(page);
 ---
 
-<Base title={page.data.title} description={page.data.description} gridref={page.data.gridref}>
+<Base title={page.data.title} description={page.data.description}>
   <section style="padding-bottom:16px">
     {page.data.eyebrow && <div class="eyebrow">{page.data.eyebrow}</div>}
     <h1 class="sub">{page.data.title}</h1>

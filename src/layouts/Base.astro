@@ -10,21 +10,13 @@ import { SITE, NAV, THEME, THEME_COLOR } from '../site';
 interface Props {
   title?: string;
   description?: string;
-  /** Mono grid reference shown top-right; each page carries its own. */
-  gridref?: string;
   /** Overrides the OG image (absolute or site-root-relative path). */
   image?: string;
   /** Omit from sitemap / discourage indexing (used by /post). */
   noindex?: boolean;
 }
 
-const {
-  title,
-  description = SITE.description,
-  gridref = 'SH 647 556 · ERYRI',
-  image,
-  noindex = false,
-} = Astro.props;
+const { title, description = SITE.description, image, noindex = false } = Astro.props;
 
 const pageTitle = title ? `${title} · ${SITE.title}` : `${SITE.title} — ${SITE.tagline}`;
 const canonical = new URL(Astro.url.pathname, Astro.site ?? SITE.url);
@@ -75,7 +67,6 @@ const isCurrent = (href: string) => {
 
     <header class="site-header">
       <a class="wordmark" href="/">SECOND<span>/</span>SUMMIT</a>
-      <div class="gridref">{gridref}</div>
     </header>
 
     <nav class="site-nav" aria-label="Primary">

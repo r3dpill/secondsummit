@@ -1,5 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
+import Banner from '../components/Banner.astro';
+import bannerWildCamp from '../assets/c2c/20260311_1809151286265827942174658153.jpg';
 import LivePill from '../components/LivePill.astro';
 import VideoEmbed from '../components/VideoEmbed.astro';
 import PostCard from '../components/PostCard.astro';
@@ -9,7 +11,14 @@ import { FILMS } from '../site';
 const latestPosts = (await getPosts()).slice(0, 3);
 ---
 
-<Base gridref="SH 647 556 · ERYRI">
+<Base>
+  <Banner
+    image={bannerWildCamp}
+    alt="A tent pitched on open fellside, hills beyond"
+    focal="center 55%"
+    priority
+  />
+
   <section class="flush" style="padding-bottom:8px">
     <div class="eyebrow">Second Summit</div>
     <h1>Long walks, done properly, filmed honestly.</h1>

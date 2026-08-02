@@ -6,6 +6,8 @@ import VideoEmbed from '../../components/VideoEmbed.astro';
 import PostCard from '../../components/PostCard.astro';
 import Stats from '../../components/Stats.astro';
 import PhotoBand from '../../components/PhotoBand.astro';
+import Banner from '../../components/Banner.astro';
+import bannerCribGoch from '../../assets/photos/snowdonia/crib-goch.jpg';
 import ElevationTracker from '../../components/ElevationTracker.astro';
 import { getPostsByCategory, inWalkOrder, postUrl } from '../../lib/posts';
 import { MAPSHARE_URL, SNOWDONIA, YOUTUBE_CHANNEL } from '../../site';
@@ -29,7 +31,15 @@ const description =
     : `Live from the Snowdonia Way, October 2026. ${SNOWDONIA.strapline}`;
 ---
 
-<Base title="Snowdonia Way" description={description} gridref="SH 647 556 · ERYRI">
+<Base title="Snowdonia Way" description={description}>
+  <Banner
+    image={bannerCribGoch}
+    alt="The Crib Goch ridge, walkers strung along the arête"
+    focal="center 45%"
+    caption="Crib Goch — the crux of day two · Photo: Diliff, CC BY-SA 3.0"
+    priority
+  />
+
   {/* ---------------------------------------------------------- hero */}
   <section style="padding-bottom:16px">
     <div class="eyebrow">{MODE === 'teaser' ? TEASER.eyebrow : 'Live expedition · Leg 1'}</div>

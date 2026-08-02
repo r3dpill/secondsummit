@@ -1,5 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
+import Banner from '../../components/Banner.astro';
+import bannerMoor from '../../assets/c2c/20260317_145550022_copy_2000x1500.jpg';
 import Stats from '../../components/Stats.astro';
 import RuleCard from '../../components/RuleCard.astro';
 import VideoEmbed from '../../components/VideoEmbed.astro';
@@ -15,8 +17,14 @@ const days = inWalkOrder(posts);
 <Base
   title="Coast to Coast"
   description="St Bees to Robin Hood's Bay, March 2026 — 174 miles, 23,180 feet of ascent, 16 days, walked self-supported. The day-by-day record."
-  gridref="NZ 953 048 · ROBIN HOOD'S BAY"
 >
+  <Banner
+    image={bannerMoor}
+    alt="Open moorland with the path running away to the horizon"
+    focal="center 50%"
+    priority
+  />
+
   <section style="padding-bottom:16px">
     <div class="eyebrow">Expedition record · March 2026</div>
     <h1 class="sub">Coast to Coast</h1>

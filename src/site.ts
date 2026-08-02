@@ -80,10 +80,10 @@ export const FILMS = {
 
 /** Bottom nav — four destinations, matching the prototype. */
 export const NAV = [
-  { href: '/', label: 'HOME', icon: '▲' },
-  { href: '/snowdonia-way/', label: 'LIVE', icon: '●' },
-  { href: '/coast-to-coast/', label: 'C2C', icon: '✓' },
-  { href: '/background/', label: 'ABOUT', icon: '§' },
+  { href: '/', label: 'Home', icon: '▲' },
+  { href: '/snowdonia-way/', label: 'Snowdonia', icon: '●' },
+  { href: '/coast-to-coast/', label: 'Coast to Coast', icon: '✓' },
+  { href: '/background/', label: 'About', icon: '◆' },
 ] as const;
 
 /** Coast to Coast headline figures (brief §Site structure). */

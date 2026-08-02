@@ -55,7 +55,7 @@ export const SNOWDONIA_FACTS = [
   { n: '44', l: 'Miles' },
   { n: '11,000', l: 'Ft ascent, approx' },
   { n: '5', l: 'Days' },
-  { n: '1,085m', l: 'Yr Wyddfa · summit of Wales' },
+  { n: '1,085m', l: 'Snowdon · summit of Wales' },
   { n: '1', l: 'Wild camp' },
   { n: 'Solo', l: 'Self-supported' },
 ] as const;
@@ -70,7 +70,7 @@ export const STAGES = [
   },
   {
     day: 2,
-    stage: 'Crib Goch → Yr Wyddfa',
+    stage: 'Crib Goch → Snowdon',
     miles: '7.5 mi',
     character: 'The crux — guided, daysack',
   },
