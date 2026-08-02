@@ -34,6 +34,7 @@
      Saturated route colours read vividly against near-black and go matte
      against a mid grey — the original site put the chart on its darkest
      surface, and that is what gave it its punch. */
+  --quote-fg: #28343b;
   --chart-bg: #141d22;
   --chart-grid: #2b363d;
   --chart-axis: #8b9aa3;
@@ -118,6 +119,8 @@
   --input-bg: #161e23;
 
 
+  /* Slate text on the dark page scored 1.2:1 — the quote was invisible. */
+  --quote-fg: #dfe4e2;
   --chart-bg: #0f161a;
   --chart-grid: #232c33;
   --chart-axis: #7f8e97;
@@ -322,7 +325,7 @@ blockquote {
   font-size: 1.2rem;
   line-height: 1.5;
   font-style: italic;
-  color: var(--slate);
+  color: var(--quote-fg);
   margin: 22px 0;
 }
 
