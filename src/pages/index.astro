@@ -1,6 +1,5 @@
 ---
 import Base from '../layouts/Base.astro';
-import Ridgeline from '../components/Ridgeline.astro';
 import LivePill from '../components/LivePill.astro';
 import VideoEmbed from '../components/VideoEmbed.astro';
 import PostCard from '../components/PostCard.astro';
@@ -25,8 +24,6 @@ const latestPosts = (await getPosts()).slice(0, 3);
       <LivePill label="NEXT LIVE · SNOWDONIA WAY · OCT 2026" />
     </p>
   </section>
-
-  <Ridgeline />
 
   <section>
     <div class="eyebrow">Latest film</div>

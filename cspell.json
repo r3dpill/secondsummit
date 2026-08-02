@@ -1,0 +1,13 @@
+{
+  "version": "0.2",
+  "language": "en-GB",
+  "words": [
+    "Beddgelert", "Caseg", "Conwy", "Crafnant", "Cringle", "Ennerdale", "Eryri",
+    "Glyder", "Glyders", "Goch", "Grosmont", "Gwennili", "Gwryd", "Gwynant",
+    "Haystacks", "Kidsty", "Llyn", "Machynlleth", "Mowbray", "Nant", "Osmotherley",
+    "Patterdale", "Snowdonia", "Swaledale", "Trefriw", "Tryfan", "Wainwright",
+    "Wyddfa", "daysack", "fraith", "inreach", "mapshare", "standfirst", "Landranger",
+    "Bricolage", "fontsource", "astro", "wrangler", "pagescms"
+  ],
+  "ignorePaths": ["node_modules/**", "dist/**", "files/**", "src/data/routes.ts"]
+}

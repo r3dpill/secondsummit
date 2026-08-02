@@ -29,8 +29,6 @@
   --map-bg: #e9edea;
   --code-bg: #ecebe4;
   --input-bg: #fff;
-  --ridge-line: #28343b;
-  --ridge-ghost: #dad7cc;
 
   /* The elevation chart is drawn on its own near-black panel, not on a card.
      Saturated route colours read vividly against near-black and go matte
@@ -119,8 +117,6 @@
   --code-bg: #161e23;
   --input-bg: #161e23;
 
-  --ridge-line: #cfd6d1;
-  --ridge-ghost: #46545d;
 
   --chart-bg: #0f161a;
   --chart-grid: #232c33;
@@ -342,44 +338,6 @@ hr {
   border: 0;
   border-top: 1px solid var(--line);
   margin: 20px 0;
-}
-
-/* ---------- ridgeline signature ---------- */
-.ridge-wrap {
-  padding: 20px 20px 8px;
-}
-
-.ridge-svg {
-  width: 100%;
-  height: auto;
-  display: block;
-}
-
-.ridge-labels {
-  display: flex;
-  justify-content: space-between;
-  gap: 8px;
-  font-family: var(--font-mono);
-  font-size: 0.6rem;
-  color: var(--muted);
-  letter-spacing: 0.03em;
-  padding: 4px 2px 0;
-}
-
-.ridge-labels b {
-  color: var(--ink);
-  font-weight: 500;
-}
-
-.ridge-labels .next {
-  color: var(--landranger);
-}
-
-.ridge-labels .later {
-  /* Faded, because the walks beyond Snowdonia are not decided yet. At 0.6 it
-     composited to 3.59:1 against the page and failed to read at 9.6px; 0.78
-     keeps the recessive feel and clears 4.5:1. */
-  opacity: 0.78;
 }
 
 /* ---------- live pill ---------- */
