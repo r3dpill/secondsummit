@@ -33,6 +33,13 @@ interface Props {
    * Letterbox ratio on a laptop. The 21:9 default suits a landscape; a photo
    * with a person standing in it needs more height or the crop takes their
    * head off.
+   *
+   * Note that `max-height` below can make the *displayed* frame wider than
+   * this on a short, wide screen — a full-bleed 16:9 is 1080px tall at
+   * 1920px wide, taller than most laptop viewports. So the real crop is
+   * often nearer 3:1, and `focal` has to be chosen for that worst case, not
+   * for the nominal ratio. For a standing figure whose head is at 19% of the
+   * frame, that means a focal around 30%, not 46%.
    */
   desktopAspect?: string;
   /**
@@ -145,7 +152,7 @@ const {
   @media (min-width: 900px) {
     .frame {
       aspect-ratio: var(--desktop-aspect);
-      max-height: 68vh;
+      max-height: 72vh;
     }
 
   }
