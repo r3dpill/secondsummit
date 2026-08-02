@@ -1,5 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
+import Banner from '../components/Banner.astro';
+import bannerToby from '../assets/photos/general/toby-stepping-stones.jpg';
 import VideoEmbed from '../components/VideoEmbed.astro';
 import { FILMS, CONTACT_EMAIL } from '../site';
 
@@ -14,6 +16,14 @@ import { FILMS, CONTACT_EMAIL } from '../site';
   title="Background"
   description="Toby Wise — a career in banking and consulting, then back to the hills. Why Second Summit exists."
 >
+  <Banner
+    image={bannerToby}
+    alt="Toby crossing a river on stepping stones, pack on, poles out"
+    focal="center 46%"
+    desktopAspect="16 / 9"
+    priority
+  />
+
   <section style="padding-bottom:16px">
     <div class="eyebrow">The background</div>
     <h1 class="sub">Toby Wise, FRGS</h1>

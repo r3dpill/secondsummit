@@ -96,14 +96,23 @@ in one place.
 
 ## Photographs
 
-Originals live **outside the repo**, in `~/Pictures/secondsummit/`:
+Originals live **outside the repo**, in a Windows folder so they can be
+dropped in from Explorer — or from a phone, if it is the OneDrive one:
 
 ```
-~/Pictures/secondsummit/
+C:\Users\tobyt\OneDrive - wise-family.net\Second Summit\
   c2c/          Coast to Coast
   snowdonia/    Snowdonia Way
   general/      portraits, kit, anything else
 ```
+
+`npm run photos` finds the library on its own, preferring OneDrive, then
+`Pictures\Second Summit`, then the Linux home directory. `PHOTO_LIBRARY`
+overrides it.
+
+**Only `c2c`, `snowdonia` and `general` are imported.** Anything else in that
+folder — working files, backups, images whose licensing is unsettled — is
+listed and skipped, so nothing gets swept into the repo by accident.
 
 Drop full-size Lightroom exports in, then:
 

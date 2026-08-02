@@ -3,10 +3,13 @@
  *
  *   npm run photos
  *
- * Drop full-size exports into the staging library, which lives OUTSIDE the
- * repo so you are never editing files inside the project:
+ * Drop full-size exports into the library, which lives OUTSIDE the repo so
+ * you are never editing files inside the project. It is found automatically,
+ * preferring a Windows or OneDrive folder over the Linux one:
  *
- *   ~/Pictures/secondsummit/
+ *   <OneDrive>/Pictures/Second Summit/     <- syncs from the phone
+ *   C:\Users\<you>\Pictures\Second Summit\
+ *
  *     c2c/           Coast to Coast
  *     snowdonia/     Snowdonia Way
  *     general/       portraits, kit, anything else
@@ -19,14 +22,51 @@
  */
 
 import { readdir, mkdir, stat, writeFile, readFile } from 'node:fs/promises';
-import { existsSync } from 'node:fs';
+import { existsSync, readdirSync } from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
 import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const LIBRARY = process.env.PHOTO_LIBRARY || path.join(os.homedir(), 'Pictures', 'secondsummit');
+
+/**
+ * Where the originals live. Set PHOTO_LIBRARY to override; otherwise the
+ * first of these that exists wins.
+ *
+ * The Windows-side locations come first deliberately: dropping files into a
+ * normal Explorer folder — or better, a OneDrive one that syncs from the
+ * phone — beats reaching into the Linux filesystem over a UNC path.
+ */
+function findLibrary() {
+  if (process.env.PHOTO_LIBRARY) return process.env.PHOTO_LIBRARY;
+
+  const candidates = [];
+  const winUsers = '/mnt/c/Users';
+  if (existsSync(winUsers)) {
+    for (const user of readdirSync(winUsers)) {
+      if (/^(All Users|Default|Default User|Public)$/i.test(user)) continue;
+      const home = path.join(winUsers, user);
+      let entries = [];
+      try {
+        entries = readdirSync(home);
+      } catch {
+        continue;
+      }
+      // OneDrive first — that is the one that syncs from a phone.
+      for (const dir of entries.filter((e) => e.startsWith('OneDrive'))) {
+        candidates.push(path.join(home, dir, 'Pictures', 'Second Summit'));
+        candidates.push(path.join(home, dir, 'Second Summit'));
+      }
+      candidates.push(path.join(home, 'Pictures', 'Second Summit'));
+    }
+  }
+  candidates.push(path.join(os.homedir(), 'Pictures', 'secondsummit'));
+
+  return candidates.find((c) => existsSync(c)) ?? candidates[candidates.length - 1];
+}
+
+const LIBRARY = findLibrary();
 const OUT_ROOT = path.join(ROOT, 'src/assets/photos');
 const MANIFEST = path.join(ROOT, 'src/assets/photos/.manifest.json');
 
@@ -58,9 +98,25 @@ try {
   // First run.
 }
 
-const collections = (await readdir(LIBRARY, { withFileTypes: true }))
+/**
+ * Only these folders are imported. Anything else in the library is left
+ * alone — the library may hold working files, backups or images whose
+ * licensing has not been settled, and none of that should be swept into the
+ * repo just because it sits in a subfolder.
+ */
+const COLLECTIONS = ['c2c', 'snowdonia', 'general'];
+
+const present = (await readdir(LIBRARY, { withFileTypes: true }))
   .filter((d) => d.isDirectory() && !d.name.startsWith('.'))
   .map((d) => d.name);
+
+const collections = present.filter((d) => COLLECTIONS.includes(d.toLowerCase()));
+const ignored = present.filter((d) => !COLLECTIONS.includes(d.toLowerCase()));
+
+if (ignored.length) {
+  console.log(`Ignoring folders that are not collections: ${ignored.join(', ')}`);
+  console.log(`Collections are: ${COLLECTIONS.join(', ')}\n`);
+}
 
 if (collections.length === 0) {
   console.log(`No collections in ${LIBRARY}. Make a folder (c2c, snowdonia, general) and add photos.`);

@@ -30,6 +30,12 @@ interface Props {
   /** Shown under the image. */
   caption?: string;
   /**
+   * Letterbox ratio on a laptop. The 21:9 default suits a landscape; a photo
+   * with a person standing in it needs more height or the crop takes their
+   * head off.
+   */
+  desktopAspect?: string;
+  /**
    * The first banner on a page should load eagerly — it is usually the
    * largest contentful paint. Everything below the fold should not.
    */
@@ -42,11 +48,12 @@ const {
   portraitImage = null,
   focal = 'center center',
   caption,
+  desktopAspect = '21 / 9',
   priority = false,
 } = Astro.props;
 ---
 
-<figure class="banner" style={`--focal:${focal}`}>
+<figure class="banner" style={`--focal:${focal};--desktop-aspect:${desktopAspect}`}>
   <div class="frame">
     {
       portraitImage && (
@@ -137,8 +144,8 @@ const {
   /* Laptop: proper letterbox, but capped so it never eats the whole screen. */
   @media (min-width: 900px) {
     .frame {
-      aspect-ratio: 21 / 9;
-      max-height: 60vh;
+      aspect-ratio: var(--desktop-aspect);
+      max-height: 68vh;
     }
 
   }
