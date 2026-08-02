@@ -24,3 +24,8 @@ pnpm-debug.log*
 *.swp
 .vscode/
 .idea/
+
+# Working images: originals staged for processing, and local preview copies.
+# Web-ready derivatives belong in src/assets/, which IS committed.
+files/images/
+src/assets/_preview/

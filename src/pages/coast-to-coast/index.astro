@@ -34,6 +34,23 @@ const days = inWalkOrder(posts);
     <ElevationTracker data={COAST_TO_COAST} />
   </section>
 
+  {
+    FILMS.flythroughCoastToCoast.id && (
+      <section>
+        <div class="eyebrow">From the air</div>
+        <VideoEmbed
+          id={FILMS.flythroughCoastToCoast.id}
+          kicker={FILMS.flythroughCoastToCoast.kicker}
+          title={FILMS.flythroughCoastToCoast.title}
+          wide
+        />
+        <p class="small" style="padding-top:8px">
+          The whole crossing, flown from the GPX track.
+        </p>
+      </section>
+    )
+  }
+
   <section>
     <div class="eyebrow">The film</div>
     <VideoEmbed

@@ -40,8 +40,7 @@ export const MODE: PageMode = resolveMode();
 
 export const TEASER = {
   eyebrow: 'Next expedition · October 2026',
-  /** Working title — Toby may retitle around Snowdon / Everest / Crib Goch. */
-  title: 'The Snowdonia Way',
+  title: 'Snowdonia Way, Part I',
   standfirst:
     'Northern Snowdonia, end to end: Beddgelert to the sea at Conwy. Solo, self-supported, five days.',
   pill: 'GOES LIVE · OCT 2026',

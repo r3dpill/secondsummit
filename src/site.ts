@@ -60,6 +60,22 @@ export const FILMS = {
     kicker: 'The background',
     title: 'Why the second summit',
   },
+  /**
+   * AvoMap aerial fly-throughs, rendered from the route GPX. These export as
+   * ordinary video files, so they go up on YouTube like everything else and
+   * play through the same click-to-load embed — no new plumbing, and no
+   * 4K file sitting in the repo.
+   */
+  flythroughCoastToCoast: {
+    id: null as string | null,
+    kicker: 'Coast to Coast · 2026',
+    title: 'The route, coast to coast — aerial fly-through',
+  },
+  flythroughSnowdonia: {
+    id: null as string | null,
+    kicker: 'Snowdonia Way · 2026',
+    title: 'The route from the air',
+  },
 } as const;
 
 /** Bottom nav — four destinations, matching the prototype. */
