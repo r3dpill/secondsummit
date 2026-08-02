@@ -94,6 +94,55 @@ in one place.
 
 ---
 
+## Photographs
+
+Originals live **outside the repo**, in `~/Pictures/secondsummit/`:
+
+```
+~/Pictures/secondsummit/
+  c2c/          Coast to Coast
+  snowdonia/    Snowdonia Way
+  general/      portraits, kit, anything else
+```
+
+Drop full-size Lightroom exports in, then:
+
+```bash
+npm run photos
+```
+
+That resizes to 2400px, converts to optimised JPEG, **strips GPS and all
+other metadata**, writes the result into `src/assets/photos/<collection>/`,
+and prints the import lines to paste. Re-running only touches what changed,
+and the originals are never modified or copied into the repo.
+
+GPS stripping matters: phone photos carry the exact pitch of a wild camp
+unless it is removed.
+
+### Banners
+
+`src/components/Banner.astro` takes one wide master and crops it per screen —
+4:3 on a phone, 16:9 from 560px, 21:9 on a laptop. `focal` decides what
+survives the crop:
+
+```astro
+<Banner image={cribGoch} alt="The Crib Goch ridge" focal="center 40%"
+        caption="Crib Goch — the crux of day two" priority />
+```
+
+Export landscape masters around 2400px wide and leave some headroom around
+the subject, so there is room to crop. Use `priority` only on the first
+banner of a page — it is usually the largest contentful paint.
+
+Where one master cannot work for both shapes, pass `portraitImage` and that
+file is used below 560px instead.
+
+### Licensing
+
+Only use photographs that are Toby's own or properly licensed. Images pulled
+from a web search are not licensed, whatever they look like, and this site
+carries his name.
+
 ## The live tracker
 
 The elevation profile on `/coast-to-coast` — and, once it has data, on
